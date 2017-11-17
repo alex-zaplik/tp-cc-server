@@ -1,4 +1,4 @@
-package edu.pwr.tp.server.messageBuilder;
+package edu.pwr.tp.server.message.builder;
 
 import org.json.JSONObject;
 
