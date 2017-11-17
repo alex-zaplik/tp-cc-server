@@ -1,7 +1,5 @@
 package edu.pwr.tp.server;
 
-import org.json.JSONObject;
-
 public class Server {
 
     private static volatile Server instance;
@@ -18,6 +16,17 @@ public class Server {
         return instance;
     }
 
+    private void init() {
+
+    }
+
+    private void run() {
+
+    }
+
     public static void main(String[] args) {
+        Server server = getServer();
+        server.init();
+        server.run();
     }
 }
