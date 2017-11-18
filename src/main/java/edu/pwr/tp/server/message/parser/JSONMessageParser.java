@@ -7,6 +7,12 @@ import java.util.Map;
 
 public class JSONMessageParser implements IMessageParser {
 
+    /**
+     * Returns a {@link Map}, where the key is the property name
+     *
+     * @param msg   JSON {@link String} to be parsed
+     * @return      {@link Map}, where the key is the property name
+     */
     @Override
     public Map<String, Object> parse(String msg) {
         JSONObject data = new JSONObject(msg);

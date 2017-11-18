@@ -14,6 +14,9 @@ import static org.junit.Assert.assertTrue;
 
 public class MessageBuilderTest {
 
+    /**
+     * Testing if the JSON String was made using correct data
+     */
     @Test
     public void testJSONMessageBuilder() {
         IMessageBuilder msgBuild = new JSONMessageBuilder();
@@ -23,7 +26,11 @@ public class MessageBuilderTest {
         int x = 13;
         int y = 77;
 
-        String msg = msgBuild.put("type", type).put("id", id).put("x", x).put("y", y).get();
+        String msg = msgBuild.put("type", type)
+                             .put("id", id)
+                             .put("x", x)
+                             .put("y", y)
+                             .get();
         JSONObject data = new JSONObject(msg);
 
         System.out.println(msg);
@@ -34,6 +41,9 @@ public class MessageBuilderTest {
         assertEquals(data.getInt("y"), y);
     }
 
+    /**
+     * Testing if the JSON parser correctly parses a valid JSON String
+     */
     @Test
     public void testJSONMessageParser() {
         IMessageParser msgParse = new JSONMessageParser();
