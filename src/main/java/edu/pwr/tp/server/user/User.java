@@ -10,15 +10,15 @@ import edu.pwr.tp.server.party.Party;
 public abstract class User {
 
 
-    private int userID;
+    protected int userID;
     /**
      * is true when user is a player
      * is false when user is only spectator
      */
-    private boolean isPlayer = false;
-    private int slotID = -1;
+    protected boolean isPlayer = false;
+    protected int slotID = -1;
 
-    private Party party;
+    protected Party party;
 
     /**
      *
