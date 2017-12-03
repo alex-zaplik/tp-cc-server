@@ -1,28 +1,40 @@
 package edu.pwr.tp.server.model.elements;
 
-import java.util.List;
-
 public abstract class Board {
 
-    private List<Pawn> pawns;
+    protected Field[][] fields;
 
-    public abstract Pawn getPawnAt(int x, int y);
-
-    public void setPawns(List<Pawn> pawns) {
-        this.pawns = pawns;
+    public Field getField(int x, int y) {
+        return fields[x][y];
     }
 
-    public Pawn getPawn(int id) {
+    public abstract Pawn getPawnAt(int x, int y);
+    public abstract boolean removePawnFrom(int x, int y);
+    public abstract void putPawn(int x, int y, Pawn pawn);
+
+    public void setPawns(Field[][] fields) {
+        this.fields = fields;
+    }
+
+    public Pawn getPawnByID(int id) {
         Pawn pawn = null;
-        for (Pawn p : pawns)
-            if (p.getID() == id)
-                pawn = p;
+        for (Field[] f : fields)
+            for (Field p : f)
+                if (p.getPawn() != null)
+                    if (p.getPawn().getID() == id) {
+                        pawn = p.getPawn();
+                    }
         return pawn;
     }
 
-    public void removePawn(int id) {
-        for (Pawn p : pawns)
-            if (p.getID() == id)
-                pawns.remove(p);
+    public boolean removePawnByID(int id) {
+        for (Field[] f : fields)
+            for (Field p : f)
+                if (p.getPawn() != null)
+                    if (p.getPawn().getID() == id) {
+                        p.deletePawn();
+                        return true;
+                    }
+        return false;
     }
 }
