@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="0.0" y="235.0">edu.pwr.tp.server.model.elements.chinesecheckers.CCPlayer</node>
+    <node x="310.0" y="155.0">edu.pwr.tp.server.model.elements.Pawn</node>
+    <node x="152.0" y="235.0">edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard</node>
+    <node x="205.0" y="0.0">edu.pwr.tp.server.model.GameFactory</node>
+    <node x="215.5" y="80.0">edu.pwr.tp.server.model.CCFactory</node>
+    <node x="9.0" y="155.0">edu.pwr.tp.server.model.elements.Player</node>
+    <node x="0.0" y="80.0">edu.pwr.tp.server.model.elements.chinesecheckers.CCMoveValidator</node>
+    <node x="0.0" y="310.0">edu.pwr.tp.server.model.GameModel</node>
+    <node x="161.0" y="155.0">edu.pwr.tp.server.model.elements.Board</node>
+    <node x="9.0" y="0.0">edu.pwr.tp.server.model.elements.MoveValidator</node>
+    <node x="301.0" y="235.0">edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard" target="edu.pwr.tp.server.model.elements.Board">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="edu.pwr.tp.server.model.elements.chinesecheckers.CCPlayer" target="edu.pwr.tp.server.model.elements.Player">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="edu.pwr.tp.server.model.CCFactory" target="edu.pwr.tp.server.model.GameFactory">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="edu.pwr.tp.server.model.elements.chinesecheckers.CCMoveValidator" target="edu.pwr.tp.server.model.elements.MoveValidator">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn" target="edu.pwr.tp.server.model.elements.Pawn">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="254.0" y="183.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
