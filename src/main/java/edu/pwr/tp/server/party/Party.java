@@ -1,5 +1,6 @@
 package edu.pwr.tp.server.party;
 
+import edu.pwr.tp.server.Server;
 import edu.pwr.tp.server.ServerManager;
 import edu.pwr.tp.server.model.GameModel;
 
@@ -9,16 +10,15 @@ public class Party implements Runnable {
 
     private GameModel gameModel;
     private ArrayList<Slot> slots;
+    private Options options;
 
     /**
      * creates a Party. Party newly created has all slots empty
      */
     public Party(){
-        gameModel = ServerManager.getInstance().createGame();
         slots = new ArrayList<>();
 
-        // TODO: Fix after merge
-        for(int i=0; i<gameModel.getMaxSlots(); i++)
+        for(int i = 0; i < gameModel.getMaxSlots(); i++)
             slots.add(new Slot(null));
     }
 
@@ -37,6 +37,15 @@ public class Party implements Runnable {
 
     public GameModel getGameModel() {
         return gameModel;
+    }
+
+    public void createGame() {
+        options.getFactory().buildBoard();
+        options.getFactory().buildPawn(options.getPlayerCount(), options.getPawnsPerPlayer());
+        options.getFactory().buildPlayer(options.getPlayerCount());
+        options.getFactory().buildValidator();
+
+        gameModel = options.getFactory().getModel();
     }
 
     @Override

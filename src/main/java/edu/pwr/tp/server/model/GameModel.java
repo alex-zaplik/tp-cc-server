@@ -13,22 +13,12 @@ public class GameModel {
     private Player[] players;
     private MoveValidator validator;
 
-    public void movePawn(int id, int toX, int toY) {
-        if (validateMove(id, toX, toY)) {
-            getPawn(id).setPosition(toX, toY);
-        }
-    }
-
     public boolean validateMove(int id, int toX, int toY) {
         return validator.validate(board, id, toX, toY);
     }
 
     public void removePawn(int id) {
-        board.removePawn(id);
-    }
-
-    public void setPawns(List<Pawn> pawns) {
-        board.setPawns(pawns);
+        board.removePawnByID(id);
     }
 
     public void setBoard(Board board) {
@@ -44,7 +34,7 @@ public class GameModel {
     }
 
     public Pawn getPawn(int id) {
-        return board.getPawn(id);
+        return board.getPawnByID(id);
     }
 
     public Pawn getPawnAt(int x, int y) {
@@ -61,5 +51,9 @@ public class GameModel {
 
     public Board getBoard() {
         return board;
+    }
+
+    public int getMaxSlots() {
+        return players.length;
     }
 }

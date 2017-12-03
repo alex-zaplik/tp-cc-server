@@ -7,12 +7,14 @@ public class Options {
     private int maxTime;
     private int maxTurnTime;
     private int playerCount;
+    private int pawnsPerPlayer;
 
-    public Options(GameFactory factory, int maxTime, int maxTurnTime, int playerCount) {
+    public Options(GameFactory factory, int maxTime, int maxTurnTime, int playerCount, int pawnsPerPlayer) {
         this.factory = factory;
         this.maxTime = maxTime;
         this.maxTurnTime = maxTurnTime;
         this.playerCount = playerCount;
+        this.pawnsPerPlayer = pawnsPerPlayer;
     }
 
     public GameFactory getFactory() {
@@ -45,5 +47,13 @@ public class Options {
 
     public void setPlayerCount(int playerCount) {
         this.playerCount = playerCount;
+    }
+
+    public int getPawnsPerPlayer() {
+        return pawnsPerPlayer;
+    }
+
+    public void setPawnsPerPlayer(int pawnsPerPlayer) {
+        this.pawnsPerPlayer = pawnsPerPlayer;
     }
 }

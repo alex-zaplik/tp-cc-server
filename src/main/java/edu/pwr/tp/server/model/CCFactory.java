@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CCFactory extends GameFactory {
+
     @Override
-    public void buildPawn(int players) {
-        int pawnsPerPlayer =  7; // TODO: Nie pamiętam ile było, a mi internet przestał działać
+    public void buildPawn(int players, int pawnsPerPlayer) {
         List<Pawn> pawns = new ArrayList<>();
 
         for (int play = 0; play < players; play++) {
@@ -20,7 +20,8 @@ public class CCFactory extends GameFactory {
             }
         }
 
-        model.setPawns(pawns);
+        // TODO: Replace this line
+        // model.setPawns(pawns);
     }
 
     @Override

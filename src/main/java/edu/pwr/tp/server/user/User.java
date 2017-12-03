@@ -47,7 +47,6 @@ public abstract class User {
         if(isPlayer)
             throw new CantPlayWithYourselfException();
 
-        // TODO: Fix after merge
         if(idx >= party.getGameModel().getMaxSlots())
             throw new IllegalArgumentException();
 
@@ -65,6 +64,4 @@ public abstract class User {
         }
         isPlayer=false;
     }
-
-
 }
