@@ -33,7 +33,7 @@ public abstract class User {
      * @return ID of User
      */
     public int getUserID(){
-        return this.userID;
+        return userID;
     }
 
     /**
@@ -44,21 +44,26 @@ public abstract class User {
      * @throws IllegalArgumentException thrown when idx is wrong
      */
     public void joinSlot(int idx) throws SlotTakenException, CantPlayWithYourselfException, IllegalArgumentException{
-        if(this.isPlayer) throw new CantPlayWithYourselfException();
-        if(idx >= this.party.getGameModel().getMaxSlots()) throw new IllegalArgumentException();
-        this.party.getSlots().get(idx).setPlayer(this);
-        this.slotID = idx;
-        this.isPlayer = true;
+        if(isPlayer)
+            throw new CantPlayWithYourselfException();
+
+        // TODO: Fix after merge
+        if(idx >= party.getGameModel().getMaxSlots())
+            throw new IllegalArgumentException();
+
+        party.getSlots().get(idx).setPlayer(this);
+        slotID = idx;
+        isPlayer = true;
     }
 
     /**
      * leaves the Slot
      */
     public void leaveSlot(){
-        if(this.isPlayer){
-            this.party.getSlots().get(slotID).leaveSlot();
+        if(isPlayer){
+            party.getSlots().get(slotID).leaveSlot();
         }
-        this.isPlayer=false;
+        isPlayer=false;
     }
 
 

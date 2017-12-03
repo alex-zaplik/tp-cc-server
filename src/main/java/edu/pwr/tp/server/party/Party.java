@@ -1,14 +1,13 @@
 package edu.pwr.tp.server.party;
 
 import edu.pwr.tp.server.ServerManager;
-import edu.pwr.tp.server.model.IGameModel;
-import edu.pwr.tp.server.user.User;
+import edu.pwr.tp.server.model.GameModel;
 
 import java.util.ArrayList;
 
-public class Party {
+public class Party implements Runnable {
 
-    private IGameModel gameModel;
+    private GameModel gameModel;
     private ArrayList<Slot> slots;
 
     /**
@@ -17,6 +16,8 @@ public class Party {
     public Party(){
         gameModel = ServerManager.getInstance().createGame();
         slots = new ArrayList<>();
+
+        // TODO: Fix after merge
         for(int i=0; i<gameModel.getMaxSlots(); i++)
             slots.add(new Slot(null));
     }
@@ -34,8 +35,13 @@ public class Party {
      * @return Model of a game that is played in this Party
      */
 
-    public IGameModel getGameModel() {
+    public GameModel getGameModel() {
         return gameModel;
+    }
+
+    @Override
+    public void run() {
+
     }
 
     /* TODO: fill this after implementing a BOT
