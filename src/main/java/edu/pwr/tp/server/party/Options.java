@@ -1,25 +1,25 @@
 package edu.pwr.tp.server.party;
 
-import edu.pwr.tp.server.model.GameFactory;
+import edu.pwr.tp.server.model.factories.GameModelFactory;
 
 public class Options {
-    private GameFactory factory;
+    private GameModelFactory factory;
     private int maxTime;
     private int maxTurnTime;
     private int playerCount;
 
-    public Options(GameFactory factory, int maxTime, int maxTurnTime, int playerCount) {
+    public Options(GameModelFactory factory, int maxTime, int maxTurnTime, int playerCount) {
         this.factory = factory;
         this.maxTime = maxTime;
         this.maxTurnTime = maxTurnTime;
         this.playerCount = playerCount;
     }
 
-    public GameFactory getFactory() {
+    public GameModelFactory getFactory() {
         return factory;
     }
 
-    public void setFactory(GameFactory factory) {
+    public void setFactory(GameModelFactory factory) {
         this.factory = factory;
     }
 
