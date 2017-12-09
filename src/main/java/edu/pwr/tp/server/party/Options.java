@@ -2,6 +2,8 @@ package edu.pwr.tp.server.party;
 
 import edu.pwr.tp.server.model.GameFactory;
 
+// TODO: Apply this class in the protocol
+
 public class Options {
     private GameFactory factory;
     private int maxTime;

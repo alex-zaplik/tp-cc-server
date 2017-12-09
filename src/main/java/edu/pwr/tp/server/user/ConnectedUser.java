@@ -6,33 +6,53 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * A class representing a users that is connected with the server
+ *
+ *
+ * @author Aleksander Lasecki
+ * @see edu.pwr.tp.server.Server
+ */
 public class ConnectedUser extends User {
 
-    private boolean isCreator;
-    private Socket socket;
+    /**
+     * PrintWriter used for sending messages to the user
+     */
     private PrintWriter out;
+    /**
+     * BufferedReader used to receive messages from the user
+     */
     private BufferedReader in;
 
-    public ConnectedUser(boolean isCreator, Socket socket) throws IOException {
-        this.isCreator = isCreator;
+    /**
+     * Class constructor
+     *
+     * @param socket        The socket used for communication between the user and the server
+     * @param ID            The ID of the user
+     * @throws IOException  Thrown if there was a failure during initialization of the PrintWriter and/or the BufferedReader
+     */
+    public ConnectedUser(Socket socket, int ID) throws IOException {
+        super(ID);
 
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public boolean isCreator() {
-        return isCreator;
+    /**
+     * Returns the user's PrintWriter
+     *
+     * @return  User's PrintWriter
+     */
+    public PrintWriter getOut() {
+        return out;
     }
 
-    public void send(String msg) {
-        out.println(msg);
-    }
-
-    public String waitAndRecieve() throws IOException {
-        String msg = null;
-
-        while ((msg = in.readLine()) == null);
-
-        return in.readLine();
+    /**
+     * Returns the user's BufferedReader
+     *
+     * @return  User's BufferedReader
+     */
+    public BufferedReader getIn() {
+        return in;
     }
 }
