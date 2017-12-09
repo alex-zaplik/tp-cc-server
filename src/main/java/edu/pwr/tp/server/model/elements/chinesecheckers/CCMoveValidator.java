@@ -11,7 +11,7 @@ public class CCMoveValidator extends MoveValidator {
         int diffX = (fromX-toX);
         int diffY = (fromY-toY);
         if(diffX>1||diffX<-1||diffY>1||diffY<-1) return false; //TODO: legalize jumping
-        if(diffX+diffY==0) return false; // this situation is where the Pawn wants to move through wrong diagonal
+        if(diffX+diffY==2||diffX+diffY==-2) return false; // this situation is where the Pawn wants to move through wrong diagonal
         return true;
     }
 }

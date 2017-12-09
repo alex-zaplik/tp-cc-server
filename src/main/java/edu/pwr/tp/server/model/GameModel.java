@@ -14,9 +14,9 @@ public class GameModel {
 
     public void movePawn(int fromX, int fromY, int toX, int toY) {
         if (validateMove(fromX, fromY, toX, toY)) {
-
-            board.putPawn(toX, toY, getPawnAt(fromX, fromY));
+            Pawn pawn = getPawnAt(fromX,fromY);
             board.removePawnFrom(fromX, fromY);
+            board.putPawn(toX, toY, pawn);
         }
     }
 

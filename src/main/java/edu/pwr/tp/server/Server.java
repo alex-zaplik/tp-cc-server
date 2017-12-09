@@ -26,7 +26,7 @@ public class Server implements Runnable {
     }
 
     void createParty(Options options) {
-        GameModel model = options.getFactory().getModel();
+        //GameModel model = options.getFactory().getModel();
     }
 
     @Override
