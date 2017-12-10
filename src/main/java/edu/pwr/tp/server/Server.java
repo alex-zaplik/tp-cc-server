@@ -205,13 +205,7 @@ public class Server {
 
         parties = new ArrayList<>();
 
-        // TODO: Remove testing parties
-        Party p1 = new Party(10,"Test1");
-        parties.add(p1);
-        new Thread(p1).start();
-        Party p2 = new Party(15,"Test2");
-        parties.add(p2);
-        new Thread(p2).start();
+
 
         try {
             sSocket = new ServerSocket(4444);

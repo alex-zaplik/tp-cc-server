@@ -6,6 +6,8 @@ import edu.pwr.tp.server.model.elements.MoveValidator;
 public class CCMoveValidator extends MoveValidator {
     @Override
     public boolean validate(Board b, int fromX, int fromY, int toX, int toY) {
+        if(b.getField(fromX,fromY)==null) return false;
+        if(b.getField(toX,toY)==null) return false;
         if(b.getPawnAt(toX, toY) != null) return false;
         if(b.getPawnAt(fromX, fromY) == null) return false;
         int diffX = (fromX-toX);
