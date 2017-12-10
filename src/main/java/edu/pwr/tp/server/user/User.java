@@ -1,70 +1,33 @@
 package edu.pwr.tp.server.user;
 
-import edu.pwr.tp.server.exceptions.CantPlayWithYourselfException;
-import edu.pwr.tp.server.exceptions.SlotTakenException;
-import edu.pwr.tp.server.party.Party;
+import java.io.IOException;
 
 /**
  * This is a player/spectator class that will be connected to the Party
  */
 public abstract class User {
 
-
-    protected int userID;
     /**
-     * is true when user is a player
-     * is false when user is only spectator
+     * The user ID
      */
-    protected boolean isPlayer = false;
-    protected int slotID = -1;
-
-    protected Party party;
+    private int ID;
 
     /**
+     * Class constructor
      *
-     * @return A party that User is connected to
+     * @param ID            The ID of the user
+     * @throws IOException  Thrown if there was a failure during initialization of the PrintWriter and/or the BufferedReader
      */
-    public Party getParty() {
-        return party;
+    User(int ID) throws IOException {
+        this.ID = ID;
     }
 
     /**
+     * Returns the user's ID
      *
-     * @return ID of User
+     * @return  User's ID
      */
-    public int getUserID(){
-        return userID;
+    public int getID() {
+        return ID;
     }
-
-    /**
-     *
-     * @param idx index of Slot in party Slots
-     * @throws SlotTakenException thrown when Slot is already Taken
-     * @throws CantPlayWithYourselfException thrown when already is a player
-     * @throws IllegalArgumentException thrown when idx is wrong
-     */
-    public void joinSlot(int idx) throws SlotTakenException, CantPlayWithYourselfException, IllegalArgumentException{
-        if(isPlayer)
-            throw new CantPlayWithYourselfException();
-
-        // TODO: Fix after merge
-        //if(idx >= party.getGameModel().getMaxSlots())
-            //throw new IllegalArgumentException();
-
-        party.getSlots().get(idx).setPlayer(this);
-        slotID = idx;
-        isPlayer = true;
-    }
-
-    /**
-     * leaves the Slot
-     */
-    public void leaveSlot(){
-        if(isPlayer){
-            party.getSlots().get(slotID).leaveSlot();
-        }
-        isPlayer=false;
-    }
-
-
 }
