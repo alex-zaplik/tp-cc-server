@@ -1,4 +1,12 @@
 edu.pwr.tp.server
+edu.pwr.tp.server.exceptions
 edu.pwr.tp.server.message
 edu.pwr.tp.server.message.builder
 edu.pwr.tp.server.message.parser
+edu.pwr.tp.server.model
+edu.pwr.tp.server.model.elements
+edu.pwr.tp.server.model.elements.chinesecheckers
+edu.pwr.tp.server.model.factories
+edu.pwr.tp.server.model.factories.chinesecheckers
+edu.pwr.tp.server.party
+edu.pwr.tp.server.user
