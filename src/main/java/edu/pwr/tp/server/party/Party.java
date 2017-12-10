@@ -2,6 +2,8 @@ package edu.pwr.tp.server.party;
 
 import edu.pwr.tp.server.ServerManager;
 import edu.pwr.tp.server.model.GameModel;
+import edu.pwr.tp.server.model.factories.GameModelFactory;
+import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 
 import java.util.ArrayList;
 
@@ -14,11 +16,11 @@ public class Party implements Runnable {
      * creates a Party. Party newly created has all slots empty
      */
     public Party(){
-        gameModel = ServerManager.getInstance().createGame();
+        // TODO: Move to ServerManager after creating networking :
+        gameModel = CCGameModelFactory.getInstance().createModel(6);
         slots = new ArrayList<>();
 
-        // TODO: Fix after merge
-        for(int i=0; i<gameModel.getMaxSlots(); i++)
+        for(int i=0; i<gameModel.getPlayers().length; i++)
             slots.add(new Slot(null));
     }
 

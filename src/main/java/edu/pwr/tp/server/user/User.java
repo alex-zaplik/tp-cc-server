@@ -48,8 +48,8 @@ public abstract class User {
             throw new CantPlayWithYourselfException();
 
         // TODO: Fix after merge
-        if(idx >= party.getGameModel().getMaxSlots())
-            throw new IllegalArgumentException();
+        //if(idx >= party.getGameModel().getMaxSlots())
+            //throw new IllegalArgumentException();
 
         party.getSlots().get(idx).setPlayer(this);
         slotID = idx;

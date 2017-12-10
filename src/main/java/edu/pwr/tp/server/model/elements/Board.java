@@ -12,7 +12,7 @@ public abstract class Board {
     public abstract boolean removePawnFrom(int x, int y);
     public abstract void putPawn(int x, int y, Pawn pawn);
 
-    public void setPawns(Field[][] fields) {
+    public void setFields(Field[][] fields) {
         this.fields = fields;
     }
 

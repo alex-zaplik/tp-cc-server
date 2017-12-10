@@ -5,7 +5,6 @@ import edu.pwr.tp.server.model.elements.Pawn;
 import edu.pwr.tp.server.model.elements.Player;
 import edu.pwr.tp.server.model.elements.MoveValidator;
 
-import java.util.List;
 
 public class GameModel {
 
@@ -13,22 +12,20 @@ public class GameModel {
     private Player[] players;
     private MoveValidator validator;
 
-    public void movePawn(int id, int toX, int toY) {
-        if (validateMove(id, toX, toY)) {
-            getPawn(id).setPosition(toX, toY);
+    public void movePawn(int fromX, int fromY, int toX, int toY) {
+        if (validateMove(fromX, fromY, toX, toY)) {
+            Pawn pawn = getPawnAt(fromX,fromY);
+            board.removePawnFrom(fromX, fromY);
+            board.putPawn(toX, toY, pawn);
         }
     }
 
-    public boolean validateMove(int id, int toX, int toY) {
-        return validator.validate(board, id, toX, toY);
+    public boolean validateMove(int fromX, int fromY, int toX, int toY) {
+        return validator.validate(board, fromX, fromY, toX, toY);
     }
 
     public void removePawn(int id) {
-        board.removePawn(id);
-    }
-
-    public void setPawns(List<Pawn> pawns) {
-        board.setPawns(pawns);
+        board.removePawnByID(id);
     }
 
     public void setBoard(Board board) {
@@ -44,7 +41,7 @@ public class GameModel {
     }
 
     public Pawn getPawn(int id) {
-        return board.getPawn(id);
+        return board.getPawnByID(id);
     }
 
     public Pawn getPawnAt(int x, int y) {
@@ -57,6 +54,10 @@ public class GameModel {
             if (p.getID() == id)
                 player = p;
         return player;
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public Board getBoard() {
