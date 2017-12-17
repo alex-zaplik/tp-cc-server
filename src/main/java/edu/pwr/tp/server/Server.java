@@ -11,6 +11,7 @@ import edu.pwr.tp.server.user.ConnectedUser;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,31 +49,38 @@ public class Server {
      */
     private volatile int lastID = 0;
 
+    private volatile boolean waitForUsers = true;
+
     /**
      * Waits for a new user
      */
-    private Runnable emptySocket = new Runnable() {
+    private Thread emptySocket =  new Thread(new Runnable() {
         @Override
         public void run() {
             if (sSocket != null && parties != null) {
-                while (true) {
+                while (waitForUsers) {
                     ConnectedUser user;
                     try {
                         user = new ConnectedUser(sSocket.accept(), getID());
                         new Thread(() -> {
                             try {
                                 setUpConnection(user);
+                                System.out.println("Connected");
+                            } catch (SocketException se) {
+                                System.out.println("Disconnected");
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }).start();
+                    } catch (SocketException e) {
+                        System.out.println("Socked was closed!");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-    };
+    });
 
     /**
      * Returns a new and unique ID for a new user
@@ -130,7 +138,9 @@ public class Server {
      *
      * @param user  The user that the list will be sent to
      */
-    private void sendPartyList(ConnectedUser user) {
+    public void sendPartyList(ConnectedUser user) {
+        System.out.println("Party list has size: " + parties.size() + ". Sending to: " + user.getID());
+
         if (parties.size() == 0) {
             user.getOut().println(
                     builder.put("s_msg", "No parties available")
@@ -139,14 +149,13 @@ public class Server {
         }
 
         for (int i = parties.size() - 1; i >= 0; i--) {
-
-            user.getOut().println(
-                    builder.put("i_size", parties.size())
-                            .put("s_name", parties.get(i).getName())
-                            .put("i_max", parties.get(i).getMaxUsers())
-                            .put("i_left", parties.get(i).getFreeSlots())
-                            .get()
-            );
+            String msg = builder.put("i_size", parties.size())
+                        .put("s_name", parties.get(i).getName())
+                        .put("i_max", parties.get(i).getMaxUsers())
+                        .put("i_left", parties.get(i).getFreeSlots())
+                        .get();
+            System.out.println("msg: " + msg);
+            user.getOut().println(msg);
         }
     }
 
@@ -158,6 +167,8 @@ public class Server {
      * @throws CreatingPartyFailedException     Thrown if a failure accrued while attempting to create a new party
      */
     private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException {
+        System.out.println("Creating a party...");
+
         Party party;
         String name = (String) settings.get("s_name");
 
@@ -205,14 +216,6 @@ public class Server {
 
         parties = new ArrayList<>();
 
-        // TODO: Remove testing parties
-        Party p1 = new Party(10,"Test1");
-        parties.add(p1);
-        new Thread(p1).start();
-        Party p2 = new Party(15,"Test2");
-        parties.add(p2);
-        new Thread(p2).start();
-
         try {
             sSocket = new ServerSocket(4444);
         } catch (IOException e) {
@@ -220,6 +223,23 @@ public class Server {
         }
 
         // Wait for users
-        new Thread(emptySocket).start();
+        emptySocket.start();
+    }
+
+    /**
+     * Stops the server
+     */
+    public void stop() throws IOException, InterruptedException {
+        waitForUsers = false;
+        sSocket.close();
+    }
+
+    /**
+     * Returns the list of all parties
+     *
+     * @return  :ist of all parties
+     */
+    public List<Party> getParties() {
+        return parties;
     }
 }

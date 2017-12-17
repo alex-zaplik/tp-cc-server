@@ -25,6 +25,11 @@ public class ConnectedUser extends User {
     private BufferedReader in;
 
     /**
+     * Socket used for communicating with the client
+     */
+    private Socket socket;
+
+    /**
      * Class constructor
      *
      * @param socket        The socket used for communication between the user and the server
@@ -36,6 +41,7 @@ public class ConnectedUser extends User {
 
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.socket = socket;
     }
 
     /**
@@ -54,5 +60,14 @@ public class ConnectedUser extends User {
      */
     public BufferedReader getIn() {
         return in;
+    }
+
+    /**
+     * Returns the user's Socket
+     *
+     * @return  User's Socket
+     */
+    public Socket getSocket() {
+        return socket;
     }
 }

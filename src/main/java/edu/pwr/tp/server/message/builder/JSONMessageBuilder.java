@@ -26,6 +26,8 @@ public class JSONMessageBuilder implements IMessageBuilder {
      */
     @Override
     public String get() {
-        return data.toString();
+        String res = data.toString();
+        data = new JSONObject();
+        return res;
     }
 }

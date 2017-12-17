@@ -12,12 +12,15 @@ public class GameModel {
     private Player[] players;
     private MoveValidator validator;
 
-    public void movePawn(int fromX, int fromY, int toX, int toY) {
+    public boolean movePawn(int fromX, int fromY, int toX, int toY) {
         if (validateMove(fromX, fromY, toX, toY)) {
             Pawn pawn = getPawnAt(fromX,fromY);
             board.removePawnFrom(fromX, fromY);
             board.putPawn(toX, toY, pawn);
+            return true;
         }
+
+        return false;
     }
 
     public boolean validateMove(int fromX, int fromY, int toX, int toY) {

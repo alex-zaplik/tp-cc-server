@@ -121,13 +121,14 @@ public class Party implements Runnable {
                         continue;
 
                     String msg = user.getIn().readLine();
-                    if (msg != null)
+                    if (msg != null) {
                         for (ConnectedUser u : users) {
                             if (u == null)
                                 continue;
 
                             u.getOut().println(name + "|" + user.getID() + ": " + msg);
                         }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
