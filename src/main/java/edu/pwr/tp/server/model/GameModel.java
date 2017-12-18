@@ -8,7 +8,7 @@ import edu.pwr.tp.server.model.elements.MoveValidator;
 
 /**
  * this class is a Model of the Game. It consists of Board, with Pawns at starting positions, Players that represent color of the Pawns at the Board, and validator that checks if the move is legal
- * @author Jarosłąw Nigiel
+ * @author Jarosław Nigiel
  * @see Board
  * @see Player
  * @see MoveValidator
@@ -46,7 +46,7 @@ public class GameModel {
      * @param toY y coordinate to witch pawn will be moved
      * @return returns true if move is legal
      */
-    public boolean validateMove(int fromX, int fromY, int toX, int toY) {
+    private boolean validateMove(int fromX, int fromY, int toX, int toY) {
         return validator.validate(board, fromX, fromY, toX, toY);
     }
 
