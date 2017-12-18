@@ -5,7 +5,16 @@ import edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCField;
 import edu.pwr.tp.server.model.factories.BoardFactory;
 
+/**
+ * this Factory creates a Board with empty fields, for a Chinese Checkers game
+ * @author Jarosław Nigiel
+ * @see edu.pwr.tp.server.model.factories.BoardFactory
+ */
 public class CCBoardFactory extends BoardFactory{
+    /**
+     * creates a CCBoard
+     * @return returns Board created
+     */
     @Override
     public Board createBoard() {
         CCField[][] fields = new CCField[17][17];
