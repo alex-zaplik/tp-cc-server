@@ -12,7 +12,8 @@ public class GameModel {
     private Player[] players;
     private MoveValidator validator;
 
-    public boolean movePawn(int fromX, int fromY, int toX, int toY) {
+    // TODO: Check if correct player
+    public boolean movePawn(int playerID, int fromX, int fromY, int toX, int toY) {
         if (validateMove(fromX, fromY, toX, toY)) {
             Pawn pawn = getPawnAt(fromX,fromY);
             board.removePawnFrom(fromX, fromY);

@@ -29,7 +29,7 @@ public class GameModelTest {
     public void testValidator1(){
         CCPawn pawn = new CCPawn(model.getPlayers()[0].getID());
         model.getBoard().putPawn(4,9, pawn);
-        model.movePawn(4,9,5,8);
+        model.movePawn(0, 4,9,5,8);
         assertNull(model.getPawnAt(4,9));
         assertEquals(model.getPawnAt(5,8),pawn);
     }

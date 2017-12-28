@@ -2,10 +2,12 @@ package edu.pwr.tp.server;
 
 import edu.pwr.tp.server.exceptions.CreatingPartyFailedException;
 import edu.pwr.tp.server.exceptions.FullPartyException;
+import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.message.builder.IMessageBuilder;
 import edu.pwr.tp.server.message.builder.JSONMessageBuilder;
 import edu.pwr.tp.server.message.parser.IMessageParser;
 import edu.pwr.tp.server.message.parser.JSONMessageParser;
+import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.party.Party;
 import edu.pwr.tp.server.user.ConnectedUser;
 
@@ -38,11 +40,11 @@ public class Server {
     /**
      * Used to parse received messages
      */
-    private IMessageParser parser;
+    public static final IMessageParser parser = new JSONMessageParser();
     /**
      * Used to build messages that are to be sent throw a socket
      */
-    private IMessageBuilder builder;
+    public static final IMessageBuilder builder = new JSONMessageBuilder();
 
     /**
      * The ID of the last user that connected to the server
@@ -54,7 +56,7 @@ public class Server {
     /**
      * Waits for a new user
      */
-    private Thread emptySocket =  new Thread(new Runnable() {
+    private Runnable emptySocket = new Runnable() {
         @Override
         public void run() {
             if (sSocket != null && parties != null) {
@@ -64,23 +66,26 @@ public class Server {
                         user = new ConnectedUser(sSocket.accept(), getID());
                         new Thread(() -> {
                             try {
+                                System.out.println("User " + user.getID() + " connected");
                                 setUpConnection(user);
-                                System.out.println("Connected");
-                            } catch (SocketException se) {
-                                System.out.println("Disconnected");
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } catch (Exception e) {
+                                System.out.println("Disconnecting " + user.getID() + "...");
+
+                                try {
+                                    user.getIn().close();
+                                } catch (IOException e1) {
+                                    System.err.println("Unable to disconnect client...");
+                                }
+                                user.getOut().close();
                             }
                         }).start();
-                    } catch (SocketException e) {
-                        System.out.println("Socked was closed!");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-    });
+    };
 
     /**
      * Returns a new and unique ID for a new user
@@ -103,34 +108,40 @@ public class Server {
 
         if (response != null) {
             Map<String, Object> responseMap = parser.parse(response);
-            int action = (int) responseMap.get("i_action");
 
-            switch (action) {
-                case 0:
-                    try {
-                        Party p = createParty(responseMap);
+            if (responseMap.containsKey("i_action")) {
+                int action = (int) responseMap.get("i_action");
 
-                        if (p == null)
-                            throw new CreatingPartyFailedException();
+                switch (action) {
+                    case 0:
+                        try {
+                            Party p = createParty(responseMap);
 
-                        p.addUser(user);
-                    } catch (CreatingPartyFailedException | FullPartyException e) {
-                        // TODO: Try again
-                        e.printStackTrace();
-                    }
-                    break;
-                case 1:
-                    try {
-                        joinParty(user, responseMap);
-                    } catch (FullPartyException e) {
-                        // TODO: Try again
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    throw new IOException("Unsupported action");
+                            if (p == null)
+                                throw new CreatingPartyFailedException();
+
+                            p.addUser(user);
+
+                            user.sendMessage(builder.put("s_joined", p.getName()).get());
+
+                            // TODO: Maybe do sth with this catch
+                        } catch (CreatingPartyFailedException | FullPartyException | InvalidArgumentsException ignored) {}
+                        break;
+                    case 1:
+                        try {
+                            joinParty(user, responseMap);
+                        } catch (FullPartyException ignored) {
+                        }
+                        break;
+                    default:
+                        throw new IOException("Unsupported action");
+                }
             }
+
+            return;
         }
+
+        else throw new NullPointerException();
     }
 
     /**
@@ -138,9 +149,7 @@ public class Server {
      *
      * @param user  The user that the list will be sent to
      */
-    public void sendPartyList(ConnectedUser user) {
-        System.out.println("Party list has size: " + parties.size() + ". Sending to: " + user.getID());
-
+    private void sendPartyList(ConnectedUser user) {
         if (parties.size() == 0) {
             user.getOut().println(
                     builder.put("s_msg", "No parties available")
@@ -148,14 +157,22 @@ public class Server {
             );
         }
 
+        int size = 0;
+        for (int i = 0; i < parties.size(); i++) {
+            if (parties.get(i).isJoinable()) size++;
+        }
+
         for (int i = parties.size() - 1; i >= 0; i--) {
-            String msg = builder.put("i_size", parties.size())
-                        .put("s_name", parties.get(i).getName())
-                        .put("i_max", parties.get(i).getMaxUsers())
-                        .put("i_left", parties.get(i).getFreeSlots())
-                        .get();
-            System.out.println("msg: " + msg);
-            user.getOut().println(msg);
+            if (!parties.get(i).isJoinable())
+                continue;
+
+            user.getOut().println(
+                    builder.put("i_size", size)
+                            .put("s_name", parties.get(i).getName())
+                            .put("i_max", parties.get(i).getMaxUsers())
+                            .put("i_left", parties.get(i).getFreeSlots())
+                            .get()
+            );
         }
     }
 
@@ -166,9 +183,7 @@ public class Server {
      * @return                                  The reference to the party that was created
      * @throws CreatingPartyFailedException     Thrown if a failure accrued while attempting to create a new party
      */
-    private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException {
-        System.out.println("Creating a party...");
-
+    private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException, InvalidArgumentsException {
         Party party;
         String name = (String) settings.get("s_name");
 
@@ -178,9 +193,9 @@ public class Server {
             if (p.getName().equals(name))
                 throw new CreatingPartyFailedException();
 
-        party = new Party(max, name);
+        party = new Party(max, name, GameType.CHINESE_CHECKERS);
         parties.add(party);
-        new Thread(party).start();
+        new Thread(party, "Thread-" + party.getName()).start();
 
         return party;
     }
@@ -202,6 +217,8 @@ public class Server {
 
         if (party != null) {
             party.addUser(user);
+
+            user.sendMessage(builder.put("s_joined", party.getName()).get());
         } else {
             throw new FullPartyException();
         }
@@ -211,9 +228,6 @@ public class Server {
      * Initializing the server
      */
     void init() {
-        parser = new JSONMessageParser();
-        builder = new JSONMessageBuilder();
-
         parties = new ArrayList<>();
 
         try {
@@ -223,7 +237,7 @@ public class Server {
         }
 
         // Wait for users
-        emptySocket.start();
+        new Thread(emptySocket).start();
     }
 
     /**

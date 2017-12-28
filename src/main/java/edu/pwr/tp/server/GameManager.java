@@ -1,19 +1,27 @@
 package edu.pwr.tp.server;
 
-import edu.pwr.tp.server.exceptions.InvalidArgumantsException;
+import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.model.GameModel;
 import edu.pwr.tp.server.model.factories.GameModelFactory;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public abstract class GameManager {
 
-    protected GameModel model;
-    protected int currentPlayer;
+    Map<Integer, Integer> userToPlayer = new HashMap<>();
 
-    public GameManager(GameModelFactory factory, int players) throws InvalidArgumantsException {
+    protected GameModel model;
+
+    public GameManager(GameModelFactory factory, int players) throws InvalidArgumentsException {
         model = factory.createModel(players);
     }
 
-    public abstract void initGame();
-    public abstract boolean handleMove(int fromX, int fromY, int toX, int toY);
-    public abstract void nextPlayer();
+    public abstract void init(List<Integer> userIDs) throws InvalidArgumentsException;
+    public abstract boolean makeMove(int userID, int fx, int fy, int tx, int ty);
+
+    public int getPlayerCount() {
+        return model.getPlayers().length;
+    }
 }
