@@ -26,15 +26,15 @@ public class GameModel {
      * @param toX x coordinate to witch pawn will be moved
      * @param toY y coordinate to witch pawn will be moved
      */
-    public boolean movePawn(int fromX, int fromY, int toX, int toY) { //TODO: right color of player validation
+    public boolean movePawn(int playerID, int fromX, int fromY, int toX, int toY) { //TODO: right color of player validation
         if (validateMove(fromX, fromY, toX, toY)) {
             Pawn pawn = getPawnAt(fromX,fromY);
             board.removePawnFrom(fromX, fromY);
             try {
                 board.putPawn(toX, toY, pawn);
             } catch (FieldBusyException e) {
-                return false;
                 e.printStackTrace();
+                return false;
             }
             return true;
         }
