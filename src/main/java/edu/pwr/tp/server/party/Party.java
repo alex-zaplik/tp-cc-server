@@ -346,9 +346,8 @@ public class Party implements Runnable {
         System.out.println("Stopping " + getName() + "...");
 
         for (ConnectedUser user : users) disconnect(user);
-        server.removeParty(this);
-
         running = false;
+        server.removeParty(this);
     }
 
     private void disconnect(ConnectedUser u) {
