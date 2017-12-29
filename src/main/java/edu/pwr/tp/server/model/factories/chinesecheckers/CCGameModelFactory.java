@@ -52,12 +52,14 @@ public class CCGameModelFactory extends GameModelFactory {
         GameModel model = new GameModel();
         CCBoard board = (CCBoard) boardFactory.createBoard();
         CCPlayer[] ccPlayers = new CCPlayer[players];
+        for (int i=0; i<players; i++){
+            ccPlayers[i] = (CCPlayer) playerFactory.createPlayer();
+        }
         if(players==2||players==3||players==6){ //1st color
             for(int x=4; x<=7; x++)
                 for(int y=13; y<=16; y++){
                     if(x+y<=20){
                         try {
-                            // TODO: ccPlayers is null here
                             board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[0].getID()));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
