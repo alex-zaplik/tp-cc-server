@@ -1,10 +1,9 @@
 package edu.pwr.tp.server.user;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.concurrent.*;
 
 /**
  * A class representing a users that is connected with the server
@@ -26,6 +25,8 @@ public class ConnectedUser extends User {
 
     private boolean doneSetUp = false;
 
+    private Socket socket;
+
     /**
      * Class constructor
      *
@@ -36,6 +37,7 @@ public class ConnectedUser extends User {
     public ConnectedUser(Socket socket, int ID) throws IOException {
         super(ID);
 
+        this.socket = socket;
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
@@ -51,19 +53,30 @@ public class ConnectedUser extends User {
     public String receiveMessage(long timeout) throws IOException {
         // TODO: return null if -1 and someone disconnected
 
-        String msg;
+        if (timeout == -1) {
+            socket.setSoTimeout(0);
+            return in.readLine();
+        } else if (timeout == -2) {
+            try {
+                socket.setSoTimeout(10);
+                String msg = in.readLine();
+                socket.setSoTimeout(0);
 
-        long t = System.currentTimeMillis() + timeout;
-        while (timeout != -2 && !getIn().ready()) {
-            if (timeout != -1 && System.currentTimeMillis() > t)
-                throw new IOException("Wait timeout");
-        }
-
-        msg = in.readLine();
-        if (timeout == -2 || msg != null) {
-            return msg;
+                if (msg == null) throw new IOException("Socket closed");
+                else return msg;
+            } catch (SocketException e) {
+                throw new IOException("Client disconnected");
+            } catch (Exception e) {
+                return "";
+            }
         } else {
-            throw new IOException("Unable to receive message. The socket might be closed");
+            socket.setSoTimeout(0);
+            long t = System.currentTimeMillis() + timeout;
+            while (!getIn().ready()) {
+                if (System.currentTimeMillis() > t)
+                    throw new IOException("Wait timeout");
+            }
+            return in.readLine();
         }
     }
 

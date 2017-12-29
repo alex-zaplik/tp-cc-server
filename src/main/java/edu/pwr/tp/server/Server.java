@@ -51,6 +51,9 @@ public class Server {
      */
     private volatile int lastID = 0;
 
+    /**
+     * Flag that keeps the empty socket running
+     */
     private volatile boolean waitForUsers = true;
 
     /**
@@ -200,12 +203,21 @@ public class Server {
         return party;
     }
 
-    public synchronized void removeParty(Party party) {
-        for (Party p : parties) {
-            if (p.getName().equals(party.getName())) {
-                parties.remove(party);
-            }
-        }
+    /**
+     * Removes a party from the party list
+     *
+     * @param party     The party to be removed
+     */
+    public void removeParty(Party party) {
+        // TODO: ConcurrentModificationException
+
+//        for (Party p : parties) {
+//            if (p.getName().equals(party.getName())) {
+//                parties.remove(party);
+//            }
+//        }
+
+        System.err.println("Implement this method");
     }
 
     /**

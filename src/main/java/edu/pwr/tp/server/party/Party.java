@@ -137,8 +137,6 @@ public class Party implements Runnable {
     }
 
     private void initLoop() {
-        // TODO: Closing a party when the last user leaves
-
         waitForStart();
 
         joinable = false;
@@ -161,16 +159,19 @@ public class Party implements Runnable {
                     continue;
 
                 try {
-                    Map<String, Object> response = Server.parser.parse(user.receiveMessage(-2));
-                    if (response != null && response.containsKey("s_start")) {
-                        gameStarted = true;
-                        break;
+                    String msg = user.receiveMessage(-2);
+
+                    if (msg.length() > 0) {
+                        Map<String, Object> response = Server.parser.parse(msg);
+                        if (response != null && response.containsKey("s_start")) {
+                            gameStarted = true;
+                            break;
+                        }
+
+                        if (response == null)
+                            throw new IOException();
                     }
-
-                    if (response == null)
-                        throw new IOException();
-
-                } catch (IOException e) {
+                } catch (Exception e) {
                     disconnect(user);
                 }
             }
@@ -243,14 +244,19 @@ public class Party implements Runnable {
                     continue;
 
                 try {
-                    Map<String, Object> response = Server.parser.parse(user.receiveMessage(-2));
+                    String msg = user.receiveMessage(-1);
 
-                    if (response == null)
-                        throw new IOException();
+                    if (msg.length() > 0) {
+                        Map<String, Object> response = Server.parser.parse(msg);
 
-                    user.setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
-                    if (!user.isDoneSetUp()) allDone = false;
+                        if (response == null)
+                            throw new IOException();
 
+                        user.setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
+                        if (!user.isDoneSetUp()) allDone = false;
+                    } else {
+                        allDone = false;
+                    }
                 } catch (IOException e) {
                     endParty();
                 }
@@ -347,6 +353,8 @@ public class Party implements Runnable {
 
     private void disconnect(ConnectedUser u) {
         if (u == null) return;
+
+        u.sendMessage(Server.builder.put("s_disc", "Disconnected").get());
 
         System.out.println("Disconnecting " + u.getID() + "...");
         removeUser(u);
