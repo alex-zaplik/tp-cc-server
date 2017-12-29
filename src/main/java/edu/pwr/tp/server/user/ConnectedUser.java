@@ -49,6 +49,8 @@ public class ConnectedUser extends User {
     // timeout = -1 == infinite wait
     // timeout = -2 == instant
     public String receiveMessage(long timeout) throws IOException {
+        // TODO: return null if -1 and someone disconnected
+
         String msg;
 
         long t = System.currentTimeMillis() + timeout;

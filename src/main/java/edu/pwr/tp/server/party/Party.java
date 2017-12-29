@@ -97,7 +97,7 @@ public class Party implements Runnable {
             return;
 
         for (int i = 0; i < maxUsers; i++) {
-            if (users[i].equals(user)) {
+            if (users[i] != null && users[i].equals(user)) {
                 users[i] = null;
                 freeSlots++;
                 break;
@@ -293,7 +293,9 @@ public class Party implements Runnable {
                         .get());
             }
 
+            // users[u].getIn().reset();
             Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-1));
+            // users[u].getIn().mark(0);
 
             if (response.containsKey("i_action")) {
                 int action = (int) response.get("i_action");
@@ -304,6 +306,10 @@ public class Party implements Runnable {
                                 (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
 
                         if (!done) wasInvalid = true;
+                        else {
+                            sendMove(users[u].getID(),
+                                    (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
+                        }
 
                         // TODO: Set jump back to true here if another jump is available
 
@@ -313,6 +319,14 @@ public class Party implements Runnable {
                         break;
                 }
             }
+        }
+    }
+
+    private void sendMove(int u, int fx, int fy, int tx, int ty) {
+        for (ConnectedUser user : users) {
+            if (user == null || user.getID() == u) continue;
+
+            user.sendMessage(Server.builder.put("i_action", 0).put("i_fx", fx).put("i_fy", fy).put("i_tx", tx).put("i_ty", ty).get());
         }
     }
 
