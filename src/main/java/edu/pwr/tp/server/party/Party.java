@@ -305,7 +305,10 @@ public class Party implements Runnable {
                         boolean done = manager.makeMove(users[u].getID(),
                                 (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
 
-                        if (!done) wasInvalid = true;
+                        if (!done) {
+							users[u].sendMessage(Server.builder.put("b_valid", false).get());
+                        	wasInvalid = true;
+						}
                         else {
                             sendMove(users[u].getID(),
                                     (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
@@ -324,7 +327,10 @@ public class Party implements Runnable {
 
     private void sendMove(int u, int fx, int fy, int tx, int ty) {
         for (ConnectedUser user : users) {
-            if (user == null || user.getID() == u) continue;
+            if (user == null) continue;
+
+            if (user.getID() == u)
+				user.sendMessage(Server.builder.put("b_valid", true).get());
 
             user.sendMessage(Server.builder.put("i_action", 0).put("i_fx", fx).put("i_fy", fy).put("i_tx", tx).put("i_ty", ty).get());
         }
