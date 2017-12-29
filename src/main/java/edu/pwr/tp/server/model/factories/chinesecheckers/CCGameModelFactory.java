@@ -52,76 +52,81 @@ public class CCGameModelFactory extends GameModelFactory {
         GameModel model = new GameModel();
         CCBoard board = (CCBoard) boardFactory.createBoard();
         CCPlayer[] ccPlayers = new CCPlayer[players];
-        for(int i = 0; i<players; i++){
-            ccPlayers[i] = (CCPlayer) playerFactory.createPlayer();
-            switch (i){
-                case 0:
-                    for(int j=4; j<=7; j++)
-                        for(int k=4; k<=7; k++)
-                            if(j+k<=11) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-                case 1:
-                    for(int j=13; j<=16; j++)
-                        for(int k=4; k<=7;k++)
-                            if(j+k<=20) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-                case 2:
-                    for(int j=4; j<=7; j++)
-                        for(int k=13; k<=16;k++)
-                            if(j+k<=20) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-                case 3:
-                    for(int j=0; j<=3; j++)
-                        for(int k=9; k<=12; k++)
-                            if(j+k>=12) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-                case 4:
-                    for(int j=9; j<=12; j++)
-                        for(int k=9; k<=12; k++)
-                            if(j+k>=21) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-                case 5:
-                    for(int j=9; j<=12; j++)
-                        for(int k=0; k<=3; k++)
-                            if(j+k>=12) {
-                                try {
-                                    board.putPawn(j,k,new CCPawn(ccPlayers[i].hashCode()));
-                                } catch (FieldBusyException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                    break;
-            }
+        if(players==2||players==3||players==6){ //1st color
+            for(int x=4; x<=7; x++)
+                for(int y=13; y<=16; y++){
+                    if(x+y<=20){
+                        try {
+                            board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[0].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        }
+        if(players==4||players==6){ //2nd color
+            for(int x=0; x<=3; x++)
+                for (int y=9; y<=12; y++){
+                    if(x+y>=12){
+                        try {
+                            if(players==4) board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[0].getID()));
+                            else board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[1].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        }
+        if(players!=2){ //3rd color
+            for(int x=4; x<=7; x++)
+                for (int y=4; y<=7; y++){
+                    if(x+y<=11){
+                        try {
+                            if(players!=6) board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[1].getID()));
+                            else board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[2].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        }
+        if(players==2||players==6){ //4th color
+            for(int x=9; x<=12; x++)
+                for(int y=0; y<=3; y++)
+                    if(x+y>=12){
+                        try {
+                            if(players==2) board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[1].getID()));
+                            else board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[3].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+        }
+        if(players!=2){ //5th color
+            for(int x=13; x<=16; x++)
+                for(int y=4; y<=7; y++){
+                    if(x+y<=20){
+                        try {
+                            if(players!=6) board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[2].getID()));
+                            else board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[4].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        }
+        if(players==4||players==6){ //6th color
+            for(int x=9; x<=12; x++)
+                for(int y=9; y<=12; y++){
+                    if(x+y>=21){
+                        try {
+                            if(players==4) board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[3].getID()));
+                            else board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[5].getID()));
+                        } catch (FieldBusyException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
         }
         model.setBoard(board);
         model.setPlayers(ccPlayers);
