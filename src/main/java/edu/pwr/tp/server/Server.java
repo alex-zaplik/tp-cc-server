@@ -193,11 +193,19 @@ public class Server {
             if (p.getName().equals(name))
                 throw new CreatingPartyFailedException();
 
-        party = new Party(max, name, GameType.CHINESE_CHECKERS);
+        party = new Party(max, name, GameType.CHINESE_CHECKERS, this);
         parties.add(party);
         new Thread(party, "Thread-" + party.getName()).start();
 
         return party;
+    }
+
+    public synchronized void removeParty(Party party) {
+        for (Party p : parties) {
+            if (p.getName().equals(party.getName())) {
+                parties.remove(party);
+            }
+        }
     }
 
     /**

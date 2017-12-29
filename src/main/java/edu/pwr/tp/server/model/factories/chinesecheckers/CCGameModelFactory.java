@@ -57,6 +57,7 @@ public class CCGameModelFactory extends GameModelFactory {
                 for(int y=13; y<=16; y++){
                     if(x+y<=20){
                         try {
+                            // TODO: ccPlayers is null here
                             board.putPawn(x, y, pawnFactory.createPawn(ccPlayers[0].getID()));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();

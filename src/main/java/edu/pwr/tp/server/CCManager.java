@@ -12,16 +12,13 @@ public class CCManager extends GameManager {
     public CCManager(GameModelFactory factory, int players) throws InvalidArgumentsException {
         super(factory, players);
 
-        if (players > 6 || players < 2 || players == 5) {
+        if (players > 6 || players == 5) {
             throw new InvalidArgumentsException();
         }
     }
 
     public void init(List<Integer> userIDs) {
-        // TODO: model.getPlayers().length != userIDs.size()
-
-        model = CCGameModelFactory.getInstance().createModel(getPlayerCount());
-
+        // model = CCGameModelFactory.getInstance().createModel(getPlayerCount());
 
         for (int p = 0; p < model.getPlayers().length; p++) {
             userToPlayer.put(userIDs.get(p), model.getPlayers()[p].getID());

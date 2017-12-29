@@ -15,6 +15,9 @@ public abstract class GameManager {
     protected GameModel model;
 
     public GameManager(GameModelFactory factory, int players) throws InvalidArgumentsException {
+        if (players < 2)
+            throw new InvalidArgumentsException();
+
         model = factory.createModel(players);
     }
 

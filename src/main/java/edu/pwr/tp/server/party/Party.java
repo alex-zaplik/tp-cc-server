@@ -8,6 +8,7 @@ import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 import edu.pwr.tp.server.user.ConnectedUser;
+import edu.pwr.tp.server.user.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,9 +39,13 @@ public class Party implements Runnable {
      */
     private String name;
 
+    private GameType type;
+
     private boolean joinable = false;
+    private boolean running = true;
 
     private GameManager manager;
+    private Server server;
 
     /**
      * Class constructor
@@ -48,18 +53,14 @@ public class Party implements Runnable {
      * @param maxUsers  Maximum number of users connected to the Party
      * @param name      Name of the Party
      */
-    public Party(int maxUsers, String name, GameType type) throws InvalidArgumentsException {
+    public Party(int maxUsers, String name, GameType type, Server server) throws InvalidArgumentsException {
         this.maxUsers = maxUsers;
         this.name = name;
+        this.type = type;
+        this.server = server;
 
         users = new ConnectedUser[maxUsers];
         freeSlots = maxUsers;
-
-        switch (type) {
-            case CHINESE_CHECKERS:
-                manager = new CCManager(CCGameModelFactory.getInstance(), maxUsers);
-        }
-
         joinable = true;
     }
 
@@ -92,7 +93,8 @@ public class Party implements Runnable {
      * @param user  The user to be removed
      */
     synchronized void removeUser(ConnectedUser user) {
-        // TODO: There might be a bug here
+        if (user == null)
+            return;
 
         for (int i = 0; i < maxUsers; i++) {
             if (users[i].equals(user)) {
@@ -137,6 +139,21 @@ public class Party implements Runnable {
     private void initLoop() {
         // TODO: Closing a party when the last user leaves
 
+        waitForStart();
+
+        joinable = false;
+
+        List<Integer> userIDs = initDictionary();
+        initGameModel(userIDs);
+
+        if (running) {
+            defragUsers();
+            sendPartyStartInfo(userIDs.size());
+            waitForUsers();
+        }
+    }
+
+    private void waitForStart() {
         boolean gameStarted = false;
         while (!gameStarted) {
             for (ConnectedUser user : users) {
@@ -154,23 +171,15 @@ public class Party implements Runnable {
                         throw new IOException();
 
                 } catch (IOException e) {
-                    System.out.println("Disconnecting " + user.getID() + "...");
-                    removeUser(user);
-
-                    try {
-                        user.getIn().close();
-                    } catch (IOException e1) {
-                        System.err.println("Unable to close client's socket...");
-                    }
-
-                    user.getOut().close();
+                    disconnect(user);
                 }
             }
         }
+    }
 
-        joinable = false;
-
+    private List<Integer> initDictionary() {
         List<Integer> userIDs = new ArrayList<>();
+
         for (int u = 0; u < users.length; u++) {
             if (users[u] == null)
                 continue;
@@ -178,55 +187,75 @@ public class Party implements Runnable {
             userIDs.add(users[u].getID());
         }
 
+        return userIDs;
+    }
+
+    private void initGameModel(List<Integer> userIDs) {
         try {
+            switch (type) {
+                case CHINESE_CHECKERS:
+                    manager = new CCManager(CCGameModelFactory.getInstance(), userIDs.size());
+                    break;
+            }
+
             manager.init(userIDs);
         } catch (InvalidArgumentsException e) {
             // This should never happen
-            e.printStackTrace();
+            endParty();
         }
+    }
 
+    private void defragUsers() {
+        // TODO: Unit test this
+        int f_i = 0;
+        int b_i = users.length - 1;
+        while (f_i < b_i) {
+            if (users[f_i] == null) {
+                while (f_i < b_i && users[b_i] == null) b_i--;
+
+                if (f_i < b_i) {
+                    users[f_i] = users[b_i];
+                    users[b_i] = null;
+                }
+            }
+
+            f_i++;
+        }
+    }
+
+    private void sendPartyStartInfo(int pcount) {
         for (int u = 0; u < users.length; u++) {
             if (users[u] == null)
                 continue;
 
-            users[u].sendMessage(Server.builder.put("s_game", "Test").put("i_pcount", manager.getPlayerCount()).get());
+            users[u].sendMessage(Server.builder.put("s_game", "CC").put("i_pcount", pcount).put("i_pindex", u).get());
         }
+    }
 
+    private void waitForUsers() {
         boolean allDone = false;
         while (!allDone) {
 
             allDone = true;
 
-            for (int u = 0; u < users.length; u++) {
-                if (users[u] == null)
+            for (ConnectedUser user : users) {
+                if (user == null)
                     continue;
 
                 try {
-                    Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-2));
+                    Map<String, Object> response = Server.parser.parse(user.receiveMessage(-2));
 
                     if (response == null)
                         throw new IOException();
 
-                    users[u].setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
-                    if (!users[u].isDoneSetUp()) allDone = false;
+                    user.setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
+                    if (!user.isDoneSetUp()) allDone = false;
 
                 } catch (IOException e) {
                     endParty();
-
-                    System.out.println("Disconnecting " + users[u].getID() + "...");
-                    try {
-                        users[u].getIn().close();
-                    } catch (IOException e1) {
-                        System.err.println("Unable to close client's socket...");
-                    }
-                    users[u].getOut().close();
-
-                    removeUser(users[u]);
                 }
             }
         }
-
-        System.out.println("All done");
     }
 
     private void gameLoop() {
@@ -238,50 +267,77 @@ public class Party implements Runnable {
 
                 try {
                     // TODO: Clear the buffer here in case someone sent something when they weren't supposed to
-
-                    users[u].sendMessage(Server.builder
-                            .put("s_move", "Your move")
-                            .get());
-
-                    Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-1));
-
-                    if (response.containsKey("i_action")) {
-                        int action = (int) response.get("i_action");
-
-                        switch (action) {
-                            case 0:
-                                boolean done = manager.makeMove(users[u].getID(),
-                                        (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
-
-                                if (!done) u--;
-
-                                break;
-                            case 1:
-                                // Skipping a move
-                                break;
-                        }
-                    }
+                    handleTurn(u);
                 } catch (IOException e) {
                     endParty();
+                }
+            }
+        }
+    }
 
-                    System.out.println("Disconnecting " + users[u].getID() + "...");
-                    removeUser(users[u]);
+    private void handleTurn(int u) throws IOException {
+        boolean jump = true;
+        boolean wasInvalid = false;
 
-                    try {
-                        users[u].getIn().close();
-                    } catch (IOException e1) {
-                        System.err.println("Unable to close client's socket...");
-                    }
+        while (jump) {
+            jump = false;
 
-                    users[u].getOut().close();
+            if (!wasInvalid) {
+                users[u].sendMessage(Server.builder
+                        .put("s_move", "Your move")
+                        .get());
+            } else {
+                users[u].sendMessage(Server.builder
+                        .put("s_move", "Your move")
+                        .put("s_invalid", "Move was invalid")
+                        .get());
+            }
+
+            Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-1));
+
+            if (response.containsKey("i_action")) {
+                int action = (int) response.get("i_action");
+
+                switch (action) {
+                    case 0:
+                        boolean done = manager.makeMove(users[u].getID(),
+                                (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
+
+                        if (!done) wasInvalid = true;
+
+                        // TODO: Set jump back to true here if another jump is available
+
+                        break;
+                    case 1:
+                        // Skipping a move
+                        break;
                 }
             }
         }
     }
 
     private void endParty() {
-        // TODO: End game :(
-        System.err.println("This method has not been implemented yet");
+        System.out.println("Stopping " + getName() + "...");
+
+        for (ConnectedUser user : users) disconnect(user);
+        server.removeParty(this);
+
+        running = false;
+    }
+
+    private void disconnect(ConnectedUser u) {
+        if (u == null) return;
+
+        System.out.println("Disconnecting " + u.getID() + "...");
+        removeUser(u);
+
+        try {
+            u.getIn().close();
+        } catch (IOException e1) {
+            System.err.println("Unable to close client's socket...");
+        }
+
+        u.getOut().close();
     }
 
     /**
@@ -290,7 +346,7 @@ public class Party implements Runnable {
     @Override
     public void run() {
         initLoop();
-        gameLoop();
-        endParty();
+        if (running) gameLoop();
+        if (running) endParty();
     }
 }
