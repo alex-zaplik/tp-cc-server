@@ -17,7 +17,7 @@ public class BasicBOT extends BOT {
 	}
 
 	@Override
-	void makeMove(boolean wasInvalid) {
+	void makeMove() {
 
 	}
 

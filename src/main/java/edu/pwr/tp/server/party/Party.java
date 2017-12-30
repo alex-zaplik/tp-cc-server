@@ -299,22 +299,13 @@ public class Party implements Runnable {
     }
 
     private void handleTurn(int u) throws IOException {
-        boolean jump = true;
-        boolean wasInvalid = false;
+        boolean again = true;
 
-        while (jump) {
-            jump = false;
-
-            if (!wasInvalid) {
-                users[u].sendMessage(Server.builder
-                        .put("s_move", "Your move")
-                        .get());
-            } else {
-                users[u].sendMessage(Server.builder
-                        .put("s_move", "Your move")
-                        .put("s_invalid", "Move was invalid")
-                        .get());
-            }
+        while (again) {
+            again = false;
+            users[u].sendMessage(Server.builder
+                     .put("s_move", "Your move")
+                     .get());
 
             // users[u].getIn().reset();
             Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-1));
@@ -330,7 +321,7 @@ public class Party implements Runnable {
 
                         if (!done) {
 							users[u].sendMessage(Server.builder.put("b_valid", false).get());
-                        	wasInvalid = true;
+							again = true;
 						}
                         else {
                             sendMove(users[u].getID(),
@@ -338,12 +329,13 @@ public class Party implements Runnable {
                         }
 
                         // TODO: Set jump back to true here if another jump is available
-
                         break;
                     case 1:
                         // Skipping a move
                         break;
                 }
+            } else {
+                again = true;
             }
         }
     }

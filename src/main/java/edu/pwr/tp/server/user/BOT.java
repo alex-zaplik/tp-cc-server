@@ -80,7 +80,7 @@ public abstract class BOT extends User {
                 Map<String, Object> response = Server.parser.parse(msg);
 
                 if (response.containsKey("s_move")) {
-                    makeMove(response.containsKey("s_invalid"));
+                    makeMove();
                 } else if (response.containsKey("b_valid")) {
                     confirmMove((boolean) response.get("b_valid"));
                 }
@@ -88,6 +88,6 @@ public abstract class BOT extends User {
         }
     }
 
-    abstract void makeMove(boolean wasInvalid);
+    abstract void makeMove();
     abstract void confirmMove(boolean wasValid);
 }
