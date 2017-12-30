@@ -23,6 +23,8 @@ public abstract class GameManager {
 
     public abstract void init(List<Integer> userIDs) throws InvalidArgumentsException;
     public abstract boolean makeMove(int userID, int fx, int fy, int tx, int ty);
+    public abstract boolean isWinner(int userID);
+    public abstract boolean someoneWon();
 
     public int getPlayerCount() {
         return model.getPlayers().length;

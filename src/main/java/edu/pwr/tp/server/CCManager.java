@@ -30,6 +30,19 @@ public class CCManager extends GameManager {
         return model.movePawn(userToPlayer.get(userID), fx, fy, tx, ty);
     }
 
+    @Override
+    public boolean isWinner(int userID) {
+        // TODO: Get that from the model
+        int playerID = userToPlayer.get(userID);
+        return false;
+    }
+
+    @Override
+    public boolean someoneWon() {
+        // TODO: Get that from the model
+        return false;
+    }
+
     public int getPlayerCount() {
         return model.getPlayers().length;
     }

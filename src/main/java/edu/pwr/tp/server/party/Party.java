@@ -281,7 +281,7 @@ public class Party implements Runnable {
 
     private void gameLoop() {
         // TODO: Check if someone won in this condition here
-        while (true) {
+        while (!manager.someoneWon()) {
             for (int u = 0; u < users.length; u++) {
                 if (users[u] == null)
                     continue;
@@ -293,6 +293,13 @@ public class Party implements Runnable {
                     endParty();
                 }
             }
+        }
+
+        for (User u : users) {
+            if (u == null || !(u instanceof ConnectedUser))
+                continue;
+
+            u.sendMessage(Server.builder.put("b_won", manager.isWinner(u.getID())).get());
         }
     }
 
