@@ -30,4 +30,12 @@ public abstract class User {
     public int getID() {
         return ID;
     }
+
+    public abstract void closeIn() throws IOException;
+    public abstract void closeOut();
+
+    // timeout = -1 == infinite wait
+    // timeout = -2 == instant
+    public abstract String receiveMessage(long timeout) throws IOException;
+    public abstract void sendMessage(String msg);
 }

@@ -43,13 +43,23 @@ public class ConnectedUser extends User {
     }
 
     // TODO: Document
+    @Override
     public void sendMessage(String msg) {
         getOut().println(msg);
     }
 
+    @Override
+    public void closeIn() throws IOException {
+        getIn().close();
+    }
+
+    @Override
+    public void closeOut() {
+        getOut().close();
+    }
+
     // TODO: Document
-    // timeout = -1 == infinite wait
-    // timeout = -2 == instant
+    @Override
     public String receiveMessage(long timeout) throws IOException {
         // TODO: return null if -1 and someone disconnected
 
@@ -85,7 +95,7 @@ public class ConnectedUser extends User {
      *
      * @return  User's PrintWriter
      */
-    public PrintWriter getOut() {
+    private PrintWriter getOut() {
         return out;
     }
 
@@ -94,7 +104,7 @@ public class ConnectedUser extends User {
      *
      * @return  User's BufferedReader
      */
-    public BufferedReader getIn() {
+    private BufferedReader getIn() {
         return in;
     }
 

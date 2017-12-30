@@ -75,11 +75,11 @@ public class Server {
                                 System.out.println("Disconnecting " + user.getID() + "...");
 
                                 try {
-                                    user.getIn().close();
+                                    user.closeIn();
                                 } catch (IOException e1) {
                                     System.err.println("Unable to disconnect client...");
                                 }
-                                user.getOut().close();
+                                user.closeOut();
                             }
                         }).start();
                     } catch (IOException e) {
@@ -107,7 +107,7 @@ public class Server {
      */
     private void setUpConnection(ConnectedUser user) throws IOException {
         sendPartyList(user);
-        String response = user.getIn().readLine();
+        String response = user.receiveMessage(-1);
 
         if (response != null) {
             Map<String, Object> responseMap = parser.parse(response);
@@ -154,7 +154,7 @@ public class Server {
      */
     private void sendPartyList(ConnectedUser user) {
         if (parties.size() == 0) {
-            user.getOut().println(
+            user.sendMessage(
                     builder.put("s_msg", "No parties available")
                             .get()
             );
@@ -169,7 +169,7 @@ public class Server {
             if (!parties.get(i).isJoinable())
                 continue;
 
-            user.getOut().println(
+            user.sendMessage(
                     builder.put("i_size", size)
                             .put("s_name", parties.get(i).getName())
                             .put("i_max", parties.get(i).getMaxUsers())
@@ -189,14 +189,14 @@ public class Server {
     private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException, InvalidArgumentsException {
         Party party;
         String name = (String) settings.get("s_name");
-
         int max = (int) settings.get("i_max");
+        int botCount = (int) settings.get("i_bots");
 
         for (Party p : parties)
             if (p.getName().equals(name))
                 throw new CreatingPartyFailedException();
 
-        party = new Party(max, name, GameType.CHINESE_CHECKERS, this);
+        party = new Party(max, botCount, name, GameType.CHINESE_CHECKERS, this);
         parties.add(party);
         new Thread(party, "Thread-" + party.getName()).start();
 

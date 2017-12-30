@@ -7,6 +7,8 @@ import edu.pwr.tp.server.exceptions.FullPartyException;
 import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
+import edu.pwr.tp.server.user.BOT;
+import edu.pwr.tp.server.user.BasicBOT;
 import edu.pwr.tp.server.user.ConnectedUser;
 import edu.pwr.tp.server.user.User;
 
@@ -29,7 +31,7 @@ public class Party implements Runnable {
     /**
      * Array containing all connected users (null if a slot is empty)
      */
-    private ConnectedUser[] users;
+    private User[] users;
     /**
      * Number of free slots in the Party
      */
@@ -38,6 +40,8 @@ public class Party implements Runnable {
      * Name of the Party
      */
     private String name;
+
+    private int botCount;
 
     private GameType type;
 
@@ -53,8 +57,9 @@ public class Party implements Runnable {
      * @param maxUsers  Maximum number of users connected to the Party
      * @param name      Name of the Party
      */
-    public Party(int maxUsers, String name, GameType type, Server server) throws InvalidArgumentsException {
+    public Party(int maxUsers, int botCount, String name, GameType type, Server server) throws InvalidArgumentsException {
         this.maxUsers = maxUsers;
+        this.botCount = botCount;
         this.name = name;
         this.type = type;
         this.server = server;
@@ -70,14 +75,14 @@ public class Party implements Runnable {
      * @param user                  The user to be added
      * @throws FullPartyException   Thrown if the Party was already full
      */
-    public synchronized void addUser(ConnectedUser user) throws FullPartyException {
+    public synchronized void addUser(User user) throws FullPartyException {
         if (freeSlots > 0) {
             for (int i = 0; i < maxUsers; i++) {
                 if (users[i] == null) {
                     users[i] = user;
                     freeSlots--;
 
-                    System.out.println("User with ID=" + user.getID() + " has joined " + name);
+                    System.out.println("User with ID=" + user.getID() + " has joined " + name + ((user instanceof BOT) ? " (bot)" : ""));
 
                     return;
                 }
@@ -92,7 +97,7 @@ public class Party implements Runnable {
      *
      * @param user  The user to be removed
      */
-    synchronized void removeUser(ConnectedUser user) {
+    synchronized void removeUser(User user) {
         if (user == null)
             return;
 
@@ -137,6 +142,14 @@ public class Party implements Runnable {
     }
 
     private void initLoop() {
+        for (int b = 0; b < botCount; b++) {
+            try {
+                addUser(new BasicBOT((-b - 1), manager));
+            } catch (Exception e) {
+                endParty();
+            }
+        }
+
         waitForStart();
 
         joinable = false;
@@ -154,8 +167,8 @@ public class Party implements Runnable {
     private void waitForStart() {
         boolean gameStarted = false;
         while (!gameStarted) {
-            for (ConnectedUser user : users) {
-                if (user == null)
+            for (User user : users) {
+                if (user == null || !(user instanceof  ConnectedUser))
                     continue;
 
                 try {
@@ -172,7 +185,7 @@ public class Party implements Runnable {
                             throw new IOException();
                     }
                 } catch (Exception e) {
-                    disconnect(user);
+                    disconnect((ConnectedUser) user);
                 }
             }
         }
@@ -206,8 +219,8 @@ public class Party implements Runnable {
         }
     }
 
+    // TODO: Unit test this
     private void defragUsers() {
-        // TODO: Unit test this
         int f_i = 0;
         int b_i = users.length - 1;
         while (f_i < b_i) {
@@ -226,7 +239,7 @@ public class Party implements Runnable {
 
     private void sendPartyStartInfo(int pcount) {
         for (int u = 0; u < users.length; u++) {
-            if (users[u] == null)
+            if (users[u] == null || !(users[u] instanceof ConnectedUser))
                 continue;
 
             users[u].sendMessage(Server.builder.put("s_game", "CC").put("i_pcount", pcount).put("i_pindex", u).get());
@@ -239,12 +252,16 @@ public class Party implements Runnable {
 
             allDone = true;
 
-            for (ConnectedUser user : users) {
-                if (user == null)
+            // TODO
+
+            for (User user : users) {
+                if (user == null || !(user instanceof ConnectedUser))
                     continue;
 
+                ConnectedUser cUser = (ConnectedUser) user;
+
                 try {
-                    String msg = user.receiveMessage(-1);
+                    String msg = cUser.receiveMessage(-1);
 
                     if (msg.length() > 0) {
                         Map<String, Object> response = Server.parser.parse(msg);
@@ -252,8 +269,8 @@ public class Party implements Runnable {
                         if (response == null)
                             throw new IOException();
 
-                        user.setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
-                        if (!user.isDoneSetUp()) allDone = false;
+                        cUser.setDoneSetUp(response.containsKey("b_done") && (boolean) response.get("b_done"));
+                        if (!cUser.isDoneSetUp()) allDone = false;
                     } else {
                         allDone = false;
                     }
@@ -332,7 +349,7 @@ public class Party implements Runnable {
     }
 
     private void sendMove(int u, int fx, int fy, int tx, int ty) {
-        for (ConnectedUser user : users) {
+        for (User user : users) {
             if (user == null) continue;
 
             if (user.getID() == u)
@@ -345,7 +362,10 @@ public class Party implements Runnable {
     private void endParty() {
         System.out.println("Stopping " + getName() + "...");
 
-        for (ConnectedUser user : users) disconnect(user);
+        for (User user : users) {
+            if (user instanceof ConnectedUser) disconnect((ConnectedUser) user);
+            else removeUser(user);
+        }
         running = false;
         server.removeParty(this);
     }
@@ -359,12 +379,12 @@ public class Party implements Runnable {
         removeUser(u);
 
         try {
-            u.getIn().close();
+            u.closeIn();
         } catch (IOException e1) {
             System.err.println("Unable to close client's socket...");
         }
 
-        u.getOut().close();
+        u.closeOut();
     }
 
     /**
