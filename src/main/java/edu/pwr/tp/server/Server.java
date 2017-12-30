@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-// TODO: Protocol description
 /**
  * A class representing the server functionality
  *
@@ -105,7 +104,7 @@ public class Server {
      * @param user          The user we want to initialize
      * @throws IOException  Thrown by the BufferedReader
      */
-    private void setUpConnection(ConnectedUser user) throws IOException {
+    private void setUpConnection(ConnectedUser user) throws IOException, CreatingPartyFailedException, InvalidArgumentsException, FullPartyException {
         sendPartyList(user);
         String response = user.receiveMessage(-1);
 
@@ -117,18 +116,13 @@ public class Server {
 
                 switch (action) {
                     case 0:
-                        try {
-                            Party p = createParty(responseMap);
+                        Party p = createParty(responseMap);
 
-                            if (p == null)
-                                throw new CreatingPartyFailedException();
+                        if (p == null)
+                            throw new CreatingPartyFailedException();
 
-                            p.addUser(user);
-
-                            user.sendMessage(builder.put("s_joined", p.getName()).get());
-
-                            // TODO: Maybe do sth with this catch
-                        } catch (CreatingPartyFailedException | FullPartyException | InvalidArgumentsException ignored) {}
+                        p.addUser(user);
+                        user.sendMessage(builder.put("s_joined", p.getName()).get());
                         break;
                     case 1:
                         try {

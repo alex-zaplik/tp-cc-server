@@ -252,8 +252,6 @@ public class Party implements Runnable {
 
             allDone = true;
 
-            // TODO
-
             for (User user : users) {
                 if (user == null || !(user instanceof ConnectedUser))
                     continue;
@@ -328,7 +326,7 @@ public class Party implements Runnable {
                                     (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
                         }
 
-                        // TODO: Set jump back to true here if another jump is available
+                        // TODO: Set again to true here if another jump is available
                         break;
                     case 1:
                         // Skipping a move

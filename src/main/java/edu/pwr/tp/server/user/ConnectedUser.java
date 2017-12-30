@@ -42,7 +42,6 @@ public class ConnectedUser extends User {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    // TODO: Document
     @Override
     public void sendMessage(String msg) {
         getOut().println(msg);
@@ -58,11 +57,8 @@ public class ConnectedUser extends User {
         getOut().close();
     }
 
-    // TODO: Document
     @Override
     public String receiveMessage(long timeout) throws IOException {
-        // TODO: return null if -1 and someone disconnected
-
         if (timeout == -1) {
             socket.setSoTimeout(0);
             return in.readLine();
