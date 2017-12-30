@@ -64,7 +64,7 @@ public class Party implements Runnable {
         this.type = type;
         this.server = server;
 
-        users = new ConnectedUser[maxUsers];
+        users = new User[maxUsers];
         freeSlots = maxUsers;
         joinable = true;
     }
@@ -144,7 +144,7 @@ public class Party implements Runnable {
     private void initLoop() {
         for (int b = 0; b < botCount; b++) {
             try {
-                addUser(new BasicBOT((-b - 1), manager));
+                addUser(new BasicBOT((-b - 1)));
             } catch (Exception e) {
                 endParty();
             }
@@ -212,9 +212,14 @@ public class Party implements Runnable {
                     break;
             }
 
+            for (User user : users)
+                if (user != null && !(user instanceof ConnectedUser))
+                    ((BOT) user).setManager(manager);
+
             manager.init(userIDs);
         } catch (InvalidArgumentsException e) {
             // This should never happen
+            running = false;
             endParty();
         }
     }

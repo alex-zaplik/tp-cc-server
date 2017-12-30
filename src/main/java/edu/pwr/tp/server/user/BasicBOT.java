@@ -1,7 +1,5 @@
 package edu.pwr.tp.server.user;
 
-import edu.pwr.tp.server.GameManager;
-
 import java.io.IOException;
 
 public class BasicBOT extends BOT {
@@ -12,13 +10,13 @@ public class BasicBOT extends BOT {
 	 * @param ID The ID of the user
 	 * @throws IOException Thrown if there was a failure during initialization of the PrintWriter and/or the BufferedReader
 	 */
-	public BasicBOT(int ID, GameManager manager) throws IOException {
-		super(ID, manager);
+	public BasicBOT(int ID) throws IOException {
+		super(ID);
 	}
 
 	@Override
 	void makeMove() {
-
+		skipMove();
 	}
 
 	@Override

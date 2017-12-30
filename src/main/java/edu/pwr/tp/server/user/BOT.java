@@ -21,9 +21,11 @@ public abstract class BOT extends User {
      * @param ID The ID of the user
      * @throws IOException Thrown if there was a failure during initialization of the PrintWriter and/or the BufferedReader
      */
-    BOT(int ID, GameManager manager) throws IOException {
+    BOT(int ID) throws IOException {
         super(ID);
+    }
 
+    public void setManager(GameManager manager) {
         this.manager = manager;
     }
 
