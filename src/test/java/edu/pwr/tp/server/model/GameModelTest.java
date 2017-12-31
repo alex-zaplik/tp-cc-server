@@ -1,5 +1,6 @@
 package edu.pwr.tp.server.model;
 
+import edu.pwr.tp.server.exceptions.FieldBusyException;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 import org.junit.Before;
@@ -17,7 +18,7 @@ public class GameModelTest {
     }
 
     @Test
-    public void testPawnOperations(){
+    public void testPawnOperations() throws FieldBusyException {
         CCPawn pawn = new CCPawn(model.getPlayers()[0].getID());
         model.getBoard().putPawn(4,9, pawn);
         assertEquals(pawn, model.getPawnAt(4,9));
@@ -26,10 +27,10 @@ public class GameModelTest {
     }
 
     @Test
-    public void testValidator1(){
+    public void testValidator1() throws FieldBusyException {
         CCPawn pawn = new CCPawn(model.getPlayers()[0].getID());
         model.getBoard().putPawn(4,9, pawn);
-        model.movePawn(4,9,5,8);
+        model.movePawn(0, 4,9,5,8);
         assertNull(model.getPawnAt(4,9));
         assertEquals(model.getPawnAt(5,8),pawn);
     }

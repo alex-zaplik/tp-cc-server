@@ -3,9 +3,25 @@ package edu.pwr.tp.server.model.elements.chinesecheckers;
 import edu.pwr.tp.server.model.elements.Board;
 import edu.pwr.tp.server.model.elements.MoveValidator;
 
+/**
+ * this is MoveValidator class for Chinese Checkers game
+ * @author Jarosław Nigiel
+ * @see edu.pwr.tp.server.model.elements.MoveValidator
+ */
 public class CCMoveValidator extends MoveValidator {
+    /**
+     * checks if move is legal at given parameters
+     * @param b Board witch will be validated
+     * @param fromX the x coordinate from witch Pawn wants to be moved
+     * @param fromY the y coordinate from witch Pawn wants to be moved
+     * @param toX the x coordinate where Pawn wants to be moved
+     * @param toY the y coordinate where Pawn wants to be moved
+     * @return returns true if move is legal
+     */
     @Override
     public boolean validate(Board b, int fromX, int fromY, int toX, int toY) {
+        if(b.getField(fromX,fromY)==null) return false;
+        if(b.getField(toX,toY)==null) return false;
         if(b.getPawnAt(toX, toY) != null) return false;
         if(b.getPawnAt(fromX, fromY) == null) return false;
         int diffX = (fromX-toX);

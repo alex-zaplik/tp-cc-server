@@ -2,20 +2,22 @@ package edu.pwr.tp.server;
 
 import edu.pwr.tp.server.exceptions.CreatingPartyFailedException;
 import edu.pwr.tp.server.exceptions.FullPartyException;
+import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.message.builder.IMessageBuilder;
 import edu.pwr.tp.server.message.builder.JSONMessageBuilder;
 import edu.pwr.tp.server.message.parser.IMessageParser;
 import edu.pwr.tp.server.message.parser.JSONMessageParser;
+import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.party.Party;
 import edu.pwr.tp.server.user.ConnectedUser;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-// TODO: Protocol description
 /**
  * A class representing the server functionality
  *
@@ -37,16 +39,21 @@ public class Server {
     /**
      * Used to parse received messages
      */
-    private IMessageParser parser;
+    public static final IMessageParser parser = new JSONMessageParser();
     /**
      * Used to build messages that are to be sent throw a socket
      */
-    private IMessageBuilder builder;
+    public static final IMessageBuilder builder = new JSONMessageBuilder();
 
     /**
      * The ID of the last user that connected to the server
      */
     private volatile int lastID = 0;
+
+    /**
+     * Flag that keeps the empty socket running
+     */
+    private volatile boolean waitForUsers = true;
 
     /**
      * Waits for a new user
@@ -55,15 +62,23 @@ public class Server {
         @Override
         public void run() {
             if (sSocket != null && parties != null) {
-                while (true) {
+                while (waitForUsers) {
                     ConnectedUser user;
                     try {
                         user = new ConnectedUser(sSocket.accept(), getID());
                         new Thread(() -> {
                             try {
+                                System.out.println("User " + user.getID() + " connected");
                                 setUpConnection(user);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } catch (Exception e) {
+                                System.out.println("Disconnecting " + user.getID() + "...");
+
+                                try {
+                                    user.closeIn();
+                                } catch (IOException e1) {
+                                    System.err.println("Unable to disconnect client...");
+                                }
+                                user.closeOut();
                             }
                         }).start();
                     } catch (IOException e) {
@@ -89,40 +104,41 @@ public class Server {
      * @param user          The user we want to initialize
      * @throws IOException  Thrown by the BufferedReader
      */
-    private void setUpConnection(ConnectedUser user) throws IOException {
+    private void setUpConnection(ConnectedUser user) throws IOException, CreatingPartyFailedException, InvalidArgumentsException, FullPartyException {
         sendPartyList(user);
-        String response = user.getIn().readLine();
+        String response = user.receiveMessage(-1);
 
         if (response != null) {
             Map<String, Object> responseMap = parser.parse(response);
-            int action = (int) responseMap.get("i_action");
 
-            switch (action) {
-                case 0:
-                    try {
+            if (responseMap.containsKey("i_action")) {
+                int action = (int) responseMap.get("i_action");
+
+                switch (action) {
+                    case 0:
                         Party p = createParty(responseMap);
 
                         if (p == null)
                             throw new CreatingPartyFailedException();
 
                         p.addUser(user);
-                    } catch (CreatingPartyFailedException | FullPartyException e) {
-                        // TODO: Try again
-                        e.printStackTrace();
-                    }
-                    break;
-                case 1:
-                    try {
-                        joinParty(user, responseMap);
-                    } catch (FullPartyException e) {
-                        // TODO: Try again
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    throw new IOException("Unsupported action");
+                        user.sendMessage(builder.put("s_joined", p.getName()).get());
+                        break;
+                    case 1:
+                        try {
+                            joinParty(user, responseMap);
+                        } catch (FullPartyException ignored) {
+                        }
+                        break;
+                    default:
+                        throw new IOException("Unsupported action");
+                }
             }
+
+            return;
         }
+
+        else throw new NullPointerException();
     }
 
     /**
@@ -132,16 +148,23 @@ public class Server {
      */
     private void sendPartyList(ConnectedUser user) {
         if (parties.size() == 0) {
-            user.getOut().println(
+            user.sendMessage(
                     builder.put("s_msg", "No parties available")
                             .get()
             );
         }
 
-        for (int i = parties.size() - 1; i >= 0; i--) {
+        int size = 0;
+        for (int i = 0; i < parties.size(); i++) {
+            if (parties.get(i).isJoinable()) size++;
+        }
 
-            user.getOut().println(
-                    builder.put("i_size", parties.size())
+        for (int i = parties.size() - 1; i >= 0; i--) {
+            if (!parties.get(i).isJoinable())
+                continue;
+
+            user.sendMessage(
+                    builder.put("i_size", size)
                             .put("s_name", parties.get(i).getName())
                             .put("i_max", parties.get(i).getMaxUsers())
                             .put("i_left", parties.get(i).getFreeSlots())
@@ -157,21 +180,38 @@ public class Server {
      * @return                                  The reference to the party that was created
      * @throws CreatingPartyFailedException     Thrown if a failure accrued while attempting to create a new party
      */
-    private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException {
+    private synchronized Party createParty(Map<String, Object> settings) throws CreatingPartyFailedException, InvalidArgumentsException {
         Party party;
         String name = (String) settings.get("s_name");
-
         int max = (int) settings.get("i_max");
+        int botCount = (int) settings.get("i_bots");
 
         for (Party p : parties)
             if (p.getName().equals(name))
                 throw new CreatingPartyFailedException();
 
-        party = new Party(max, name);
+        party = new Party(max, botCount, name, GameType.CHINESE_CHECKERS, this);
         parties.add(party);
-        new Thread(party).start();
+        new Thread(party, "Thread-" + party.getName()).start();
 
         return party;
+    }
+
+    /**
+     * Removes a party from the party list
+     *
+     * @param party     The party to be removed
+     */
+    public void removeParty(Party party) {
+        // TODO: ConcurrentModificationException
+
+//        for (Party p : parties) {
+//            if (p.getName().equals(party.getName())) {
+//                parties.remove(party);
+//            }
+//        }
+
+        System.err.println("Implement this method");
     }
 
     /**
@@ -191,6 +231,8 @@ public class Server {
 
         if (party != null) {
             party.addUser(user);
+
+            user.sendMessage(builder.put("s_joined", party.getName()).get());
         } else {
             throw new FullPartyException();
         }
@@ -200,18 +242,7 @@ public class Server {
      * Initializing the server
      */
     void init() {
-        parser = new JSONMessageParser();
-        builder = new JSONMessageBuilder();
-
         parties = new ArrayList<>();
-
-        // TODO: Remove testing parties
-        Party p1 = new Party(10,"Test1");
-        parties.add(p1);
-        new Thread(p1).start();
-        Party p2 = new Party(15,"Test2");
-        parties.add(p2);
-        new Thread(p2).start();
 
         try {
             sSocket = new ServerSocket(4444);
@@ -221,5 +252,22 @@ public class Server {
 
         // Wait for users
         new Thread(emptySocket).start();
+    }
+
+    /**
+     * Stops the server
+     */
+    public void stop() throws IOException, InterruptedException {
+        waitForUsers = false;
+        sSocket.close();
+    }
+
+    /**
+     * Returns the list of all parties
+     *
+     * @return  :ist of all parties
+     */
+    public List<Party> getParties() {
+        return parties;
     }
 }
