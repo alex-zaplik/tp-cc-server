@@ -248,7 +248,7 @@ public class Party implements Runnable {
         try {
             switch (type) {
                 case CHINESE_CHECKERS:
-                    manager = new CCManager(CCGameModelFactory.getInstance(), userIDs.size());
+                    manager = new CCManager(userIDs.size());
                     break;
             }
 

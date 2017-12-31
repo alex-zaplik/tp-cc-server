@@ -17,7 +17,7 @@ public class CCManagerTest {
 
 	@Before
 	public void initManager() throws InvalidArgumentsException {
-		manager = new CCManager(CCGameModelFactory.getInstance(), 4);
+		manager = new CCManager(4);
 
 		List<Integer> userIDs = new ArrayList<>();
 		userIDs.add(0);

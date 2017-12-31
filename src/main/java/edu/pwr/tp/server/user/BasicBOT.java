@@ -2,6 +2,9 @@ package edu.pwr.tp.server.user;
 
 import java.io.IOException;
 
+/**
+ * A basic implementation of a bot
+ */
 public class BasicBOT extends BOT {
 
 	/**
@@ -14,11 +17,20 @@ public class BasicBOT extends BOT {
 		super(ID);
 	}
 
+	/**
+	 * Makes a move
+	 */
 	@Override
 	void makeMove() {
+		// TODO: Put the algorithm here
 		skipMove();
 	}
 
+	/**
+	 * Callback called by the server (with a message) confirming validity of the las move
+	 *
+	 * @param wasValid  True if the move was valid
+	 */
 	@Override
 	void confirmMove(boolean wasValid) {
 
