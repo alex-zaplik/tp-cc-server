@@ -21,6 +21,10 @@ public abstract class GameManager {
         model = factory.createModel(players);
     }
 
+    public GameModel getModel() {
+        return model;
+    }
+
     public abstract void init(List<Integer> userIDs) throws InvalidArgumentsException;
     public abstract boolean makeMove(int userID, int fx, int fy, int tx, int ty);
     public abstract boolean isWinner(int userID);

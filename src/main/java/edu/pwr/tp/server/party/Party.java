@@ -5,7 +5,9 @@ import edu.pwr.tp.server.GameManager;
 import edu.pwr.tp.server.Server;
 import edu.pwr.tp.server.exceptions.FullPartyException;
 import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
+import edu.pwr.tp.server.model.GameModel;
 import edu.pwr.tp.server.model.GameType;
+import edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 import edu.pwr.tp.server.user.BOT;
 import edu.pwr.tp.server.user.BasicBOT;
@@ -67,6 +69,10 @@ public class Party implements Runnable {
         users = new User[maxUsers];
         freeSlots = maxUsers;
         joinable = true;
+    }
+
+    public GameModel getModel(){
+        return manager.getModel();
     }
 
     /**
@@ -194,11 +200,11 @@ public class Party implements Runnable {
     private List<Integer> initDictionary() {
         List<Integer> userIDs = new ArrayList<>();
 
-        for (int u = 0; u < users.length; u++) {
-            if (users[u] == null)
+        for (User user : users) {
+            if (user == null)
                 continue;
 
-            userIDs.add(users[u].getID());
+            userIDs.add(user.getID());
         }
 
         return userIDs;
@@ -338,10 +344,11 @@ public class Party implements Runnable {
                                     (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
                         }
 
-                        // TODO: Set again to true here if another jump is available
+                        if(((CCBoard) getModel().getBoard()).getJumpingPawn()!=null) again = true;
                         break;
                     case 1:
                         // Skipping a move
+                        ((CCBoard) getModel().getBoard()).setJumpingPawn(null);
                         break;
                 }
             } else {
