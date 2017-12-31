@@ -29,4 +29,7 @@ public abstract class GameManager {
     public int getPlayerCount() {
         return model.getPlayers().length;
     }
+    public GameModel getModel() {
+        return model;
+    }
 }

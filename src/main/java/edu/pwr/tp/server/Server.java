@@ -56,6 +56,11 @@ public class Server {
     private volatile boolean waitForUsers = true;
 
     /**
+     * Parties that will be deleted from the party list when a new user connects
+     */
+    private List<Party> partiesToDelete = new ArrayList<>();
+
+    /**
      * Waits for a new user
      */
     private Runnable emptySocket = new Runnable() {
@@ -69,6 +74,7 @@ public class Server {
                         new Thread(() -> {
                             try {
                                 System.out.println("User " + user.getID() + " connected");
+                                cleanUpParties();
                                 setUpConnection(user);
                             } catch (Exception e) {
                                 System.out.println("Disconnecting " + user.getID() + "...");
@@ -81,7 +87,9 @@ public class Server {
                                 user.closeOut();
                             }
                         }).start();
-                    } catch (IOException e) {
+                    } catch (SocketException e) {
+                        System.err.println("Socket closed");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -96,6 +104,20 @@ public class Server {
      */
     private synchronized int getID() {
         return lastID++;
+    }
+
+    /**
+     * Deleting parties in the party list that are present in partiesToDelete and clearing partiesToDelete
+     */
+    private synchronized void cleanUpParties() {
+        for (Party p : parties) {
+            if (partiesToDelete.contains(p)) {
+                parties.remove(p);
+                partiesToDelete.remove(p);
+            }
+        }
+
+        partiesToDelete.clear();
     }
 
     /**
@@ -147,7 +169,12 @@ public class Server {
      * @param user  The user that the list will be sent to
      */
     private void sendPartyList(ConnectedUser user) {
-        if (parties.size() == 0) {
+        int partyCount = 0;
+        for (Party p : parties)
+            if (p.isJoinable())
+                partyCount++;
+
+        if (partyCount == 0) {
             user.sendMessage(
                     builder.put("s_msg", "No parties available")
                             .get()
@@ -202,16 +229,8 @@ public class Server {
      *
      * @param party     The party to be removed
      */
-    public void removeParty(Party party) {
-        // TODO: ConcurrentModificationException
-
-//        for (Party p : parties) {
-//            if (p.getName().equals(party.getName())) {
-//                parties.remove(party);
-//            }
-//        }
-
-        System.err.println("Implement this method");
+    public synchronized void removeParty(Party party) {
+        partiesToDelete.add(party);
     }
 
     /**

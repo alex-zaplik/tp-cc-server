@@ -44,6 +44,7 @@ public class ConnectedUser extends User {
 
     @Override
     public void sendMessage(String msg) {
+        System.out.println(">" + getID() + "> " + msg);
         getOut().println(msg);
     }
 
