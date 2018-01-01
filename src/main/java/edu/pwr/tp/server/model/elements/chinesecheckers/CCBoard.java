@@ -15,6 +15,16 @@ public class CCBoard extends Board {
      */
     public static final int pawnsPerPlayer = 10;
 
+    private CCPawn jumpingPawn = null;
+
+    public CCPawn getJumpingPawn() {
+        return jumpingPawn;
+    }
+
+    public void setJumpingPawn(CCPawn jumpingPawn) {
+        this.jumpingPawn = jumpingPawn;
+    }
+
     /**
      *
      * @param x the x coordinate

@@ -7,6 +7,7 @@ import edu.pwr.tp.server.exceptions.FullPartyException;
 import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
 import edu.pwr.tp.server.model.GameModel;
 import edu.pwr.tp.server.model.GameType;
+import edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 import edu.pwr.tp.server.user.BOT;
 import edu.pwr.tp.server.user.BasicBOT;
@@ -84,6 +85,10 @@ public class Party implements Runnable {
         users = new User[maxUsers];
         freeSlots = maxUsers;
         joinable = true;
+    }
+
+    public GameModel getModel(){
+        return manager.getModel();
     }
 
     /**
@@ -229,11 +234,11 @@ public class Party implements Runnable {
     private List<Integer> initUserIDs() {
         List<Integer> userIDs = new ArrayList<>();
 
-        for (int u = 0; u < users.length; u++) {
-            if (users[u] == null)
+        for (User user : users) {
+            if (user == null)
                 continue;
 
-            userIDs.add(users[u].getID());
+            userIDs.add(user.getID());
         }
 
         return userIDs;
@@ -393,14 +398,16 @@ public class Party implements Runnable {
 							again = true;
 						}
                         else {
-                            sendMove(users[u].getID(),
+                            if(((CCBoard) getModel().getBoard()).getJumpingPawn()!=null) again = true;
+
+                            sendMove(users[u].getID(), again,
                                     (int) response.get("i_fx"), (int) response.get("i_fy"), (int) response.get("i_tx"), (int) response.get("i_ty"));
                         }
 
-                        // TODO: Set again to true here if another jump is available
                         break;
                     case 1:
                         // Skipping a move
+                        ((CCBoard) getModel().getBoard()).setJumpingPawn(null);
                         break;
                 }
             } else {
@@ -418,12 +425,12 @@ public class Party implements Runnable {
      * @param tx    To x
      * @param ty    To y
      */
-    private void sendMove(int u, int fx, int fy, int tx, int ty) {
+    private void sendMove(int u, boolean jump, int fx, int fy, int tx, int ty) {
         for (User user : users) {
             if (user == null) continue;
 
             if (user.getID() == u)
-				user.sendMessage(Server.builder.put("b_valid", true).get());
+				user.sendMessage(Server.builder.put("b_valid", true).put("b_jump", jump).get());
 
             user.sendMessage(Server.builder.put("i_action", 0).put("i_fx", fx).put("i_fy", fy).put("i_tx", tx).put("i_ty", ty).get());
         }
