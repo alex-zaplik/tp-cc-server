@@ -9,22 +9,19 @@ import edu.pwr.tp.server.model.elements.Field;
  */
 public class CCField extends Field {
 
+    private int baseID;
+
+    public int getBaseID() {
+        return baseID;
+    }
+
     /**
      * creates Field and sets his coordinates to x and y
      * @param x x coordinate
      * @param y y coordinate
      */
-    public CCField(int x, int y) {
+    public CCField(int x, int y, int baseID) {
         super(x, y);
-    }
-
-    /**
-     * creates Field and sets his coordinates to x and y, moreover puts a pawn on created Field
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param pawn pawn that will be put on the new Field
-     */
-    public CCField(int x, int y, CCPawn pawn) {
-        super(x, y, pawn);
+        this.baseID=baseID;
     }
 }
