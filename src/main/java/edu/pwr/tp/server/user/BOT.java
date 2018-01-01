@@ -30,6 +30,11 @@ public abstract class BOT extends User {
     private Queue<String> toClient = new ArrayDeque<>();
 
     /**
+     * The bot's in-game index. Invalid if == -1
+     */
+    private int index = -1;
+
+    /**
      * Class constructor
      *
      * @param ID The ID of the user
@@ -46,6 +51,15 @@ public abstract class BOT extends User {
      */
     public void setManager(GameManager manager) {
         this.manager = manager;
+    }
+
+    /**
+     * Sets the in-game index
+     *
+     * @param index The index
+     */
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     /**

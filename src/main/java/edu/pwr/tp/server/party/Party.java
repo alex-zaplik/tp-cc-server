@@ -87,10 +87,6 @@ public class Party implements Runnable {
         joinable = true;
     }
 
-    public GameModel getModel(){
-        return manager.getModel();
-    }
-
     /**
      * Adds the specified user to the Party
      *
@@ -296,8 +292,14 @@ public class Party implements Runnable {
      */
     private void sendPartyStartInfo(int pcount) {
         for (int u = 0; u < users.length; u++) {
-            if (users[u] == null || !(users[u] instanceof ConnectedUser))
+            if (users[u] == null)
                 continue;
+
+            if (!(users[u] instanceof ConnectedUser)) {
+                if (users[u] instanceof BasicBOT) {
+                    ((BasicBOT) users[u]).setIndex(u);
+                }
+            }
 
             users[u].sendMessage(Server.builder.put("s_game", "CC").put("i_pcount", pcount).put("i_pindex", u).get());
         }
