@@ -343,14 +343,12 @@ public class Party implements Runnable {
      * Loop handling the game
      */
     private void gameLoop() {
-        // TODO: Check if someone won in this condition here
         while (!manager.someoneWon()) {
             for (int u = 0; u < users.length; u++) {
                 if (users[u] == null)
                     continue;
 
                 try {
-                    // TODO: Clear the buffer here in case someone sent something when they weren't supposed to
                     handleTurn(u);
                 } catch (IOException e) {
                     endParty();
