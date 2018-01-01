@@ -10,10 +10,6 @@ import edu.pwr.tp.server.model.elements.Pawn;
  * @see edu.pwr.tp.server.model.elements.Board
  */
 public class CCBoard extends Board {
-    /**
-     * The amount of pawns each player controls
-     */
-    public static final int pawnsPerPlayer = 10;
 
     private CCPawn jumpingPawn = null;
 
