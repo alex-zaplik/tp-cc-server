@@ -9,6 +9,13 @@ public class CCPawnFactory extends PawnFactory{
     public Pawn createPawn(int playerID) {
         return new CCPawn(playerID);
     }
+
+    public Pawn createPawn(int playerID, int colorID){
+        CCPawn pawn = (CCPawn) createPawn(playerID);
+        pawn.setColorID(colorID);
+        return pawn;
+    }
+
 }
 
 

@@ -8,6 +8,17 @@ import edu.pwr.tp.server.model.elements.Pawn;
  * @see edu.pwr.tp.server.model.elements.Pawn
  */
 public class CCPawn extends Pawn {
+
+    private int colorID;
+
+    public int getColorID() {
+        return colorID;
+    }
+
+    public void setColorID(int colorID) {
+        this.colorID = colorID;
+    }
+
     /**
      * creates new Pawn
      * @param playerID owner of the Pawn
