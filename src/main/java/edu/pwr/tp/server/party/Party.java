@@ -383,9 +383,10 @@ public class Party implements Runnable {
                      .put("s_move", "Your move")
                      .get());
 
-            // users[u].getIn().reset();
-            Map<String, Object> response = Server.parser.parse(users[u].receiveMessage(-1));
-            // users[u].getIn().mark(0);
+            String msg = users[u].receiveMessage(-1);
+            if(msg==null) throw new IOException();
+
+            Map<String, Object> response = Server.parser.parse(msg);
 
             if (response.containsKey("i_action")) {
                 int action = (int) response.get("i_action");
