@@ -7,29 +7,59 @@ import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 
 import java.util.List;
 
+/**
+ * A class managing a {@link GameModel}, a link between the server and a model
+ *
+ * @author Aleksander Lasecki
+ */
 public class CCManager extends GameManager {
 
-    public CCManager(GameModelFactory factory, int players) throws InvalidArgumentsException {
-        super(factory, players);
+    /**
+     * Main constructor
+     *
+     * @param players                       The number of players
+     * @throws InvalidArgumentsException    Thrown if the number of players is incorrect
+     */
+    public CCManager(int players) throws InvalidArgumentsException {
+        super(CCGameModelFactory.getInstance(), players);
 
         if (players > 6 || players == 5) {
             throw new InvalidArgumentsException();
         }
     }
 
+    /**
+     * Map initialization
+     *
+     * @param userIDs                       User IDs (server-side)
+     */
     public void init(List<Integer> userIDs) {
-        // model = CCGameModelFactory.getInstance().createModel(getPlayerCount());
-
         for (int p = 0; p < model.getPlayers().length; p++) {
             userToPlayer.put(userIDs.get(p), model.getPlayers()[p].getID());
         }
     }
 
+    /**
+     * Performs a move on the model
+     *
+     * @param userID    ID of the user attempting a move
+     * @param fx        From X
+     * @param fy        From Y
+     * @param tx        To X
+     * @param ty        To Y
+     * @return          True if the move was valid, false otherwise
+     */
     public boolean makeMove(int userID, int fx, int fy, int tx, int ty) {
         System.out.println("GameManager: " + userID + " is making a move");
         return model.movePawn(userToPlayer.get(userID), fx, fy, tx, ty);
     }
 
+    /**
+     * Checks if the user specified by the ID is a winner
+     *
+     * @param userID    The ID of the user we want to check
+     * @return          True if the user is a winner, false otherwise
+     */
     @Override
     public boolean isWinner(int userID) {
         // TODO: Get that from the model
@@ -37,13 +67,14 @@ public class CCManager extends GameManager {
         return false;
     }
 
+    /**
+     * Checks if anyone is a winner
+     *
+     * @return  True if someone is a winner, false otherwise
+     */
     @Override
     public boolean someoneWon() {
         // TODO: Get that from the model
         return false;
-    }
-
-    public int getPlayerCount() {
-        return model.getPlayers().length;
     }
 }

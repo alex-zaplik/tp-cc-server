@@ -23,8 +23,14 @@ public class ConnectedUser extends User {
      */
     private BufferedReader in;
 
+    /**
+     * True if the user has finished setting up their view
+     */
     private boolean doneSetUp = false;
 
+    /**
+     * The socket used for communication with the user
+     */
     private Socket socket;
 
     /**
@@ -42,21 +48,44 @@ public class ConnectedUser extends User {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
+    /**
+     * Sends a message to the user's output
+     *
+     * @param msg   The message to be sent
+     */
     @Override
     public void sendMessage(String msg) {
         getOut().println(msg);
     }
 
+    /**
+     * Closing the input of this user
+     *
+     * @throws IOException  Can be thrown if closing was not successful
+     */
     @Override
     public void closeIn() throws IOException {
         getIn().close();
     }
 
+    /**
+     * Closing the output of this user
+     */
     @Override
     public void closeOut() {
         getOut().close();
     }
 
+    /**
+     * Retrieves a String from the users input
+     * Timeout settings:    timeout >= 0    -> This method will wait for timeout milliseconds
+     *                      timeout == -1   -> This method will wait indefinitely
+     *                      timeout == -2   -> This method will return a String from the input or and empty String if no input was available
+     *
+     * @param timeout       The timeout setting
+     * @return              The String that was received
+     * @throws IOException  Thrown by communication errors
+     */
     @Override
     public String receiveMessage(long timeout) throws IOException {
         if (timeout == -1) {
@@ -104,10 +133,20 @@ public class ConnectedUser extends User {
         return in;
     }
 
+    /**
+     * Returns the doneSetUp flag
+     *
+     * @return  The doneSetUp flag
+     */
     public boolean isDoneSetUp() {
         return doneSetUp;
     }
 
+    /**
+     * Sets the doneSetUp flag
+     *
+     * @param doneSetUp The new value
+     */
     public void setDoneSetUp(boolean doneSetUp) {
         this.doneSetUp = doneSetUp;
     }
