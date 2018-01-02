@@ -12,10 +12,12 @@ public class BasicBOT extends BOT {
 
 	private Directories directory1;
 	private Directories directory2;
+	private Directories directory3;
 
-	public void setDirectories(Directories d1, Directories d2){
+	public void setDirectories(Directories d1, Directories d2, Directories d3){
 		this.directory1=d1;
 		this.directory2=d2;
+		this.directory3=d3;
 	}
 	/**
 	 * Class constructor
@@ -32,7 +34,6 @@ public class BasicBOT extends BOT {
 	 */
 	@Override
 	void makeMove() {
-		// TODO: test the algoritm
 		for (int x=0; x<17; x++)
 			for (int y=0; y<17; y++){
 				CCPawn pawn = (CCPawn) manager.getModel().getPawnAt(x,y);
@@ -55,6 +56,21 @@ public class BasicBOT extends BOT {
 					}
 				}
 			}
+		for(int x=0; x<17; x++){
+			for (int y=0; y<17; y++){
+				CCPawn pawn = (CCPawn) manager.getModel().getPawnAt(x,y);
+				CCField lastTarget = (CCField) manager.getModel().getBoard().getField(x+directory3.x,y+directory3.y);
+				if(lastTarget!=null&&lastTarget.getPawn()!=null) lastTarget = (CCField) manager.getModel().getBoard().getField(x+2*directory3.x,y+2*directory3.y);
+				if(pawn!=null&&pawn.getPlayerID()==manager.getPlayerID(getID())) {
+					if (lastTarget != null && (lastTarget.getBaseID() == -1 || lastTarget.getBaseID() == (pawn.getColorID() + 3) % 6 || lastTarget.getBaseID() == pawn.getColorID())) {
+						if (manager.getModel().validateMove(x, y, lastTarget.getX(), lastTarget.getY())) {
+							sendMove(x, y, lastTarget.getX(), lastTarget.getY());
+							return;
+						}
+					}
+				}
+			}
+		}
 		skipMove();
 	}
 

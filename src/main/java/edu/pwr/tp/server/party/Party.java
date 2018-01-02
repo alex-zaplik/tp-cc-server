@@ -297,27 +297,27 @@ public class Party implements Runnable {
                     ((BasicBOT) users[u]).setIndex(u);
                     switch (u){
                         case 0:
-                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.UP_RIGHT);
-                            else ((BasicBOT) users[u]).setDirectories(Directories.UP,Directories.UP_RIGHT);
+                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.UP_RIGHT,Directories.UP);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.UP,Directories.UP_RIGHT,Directories.LEFT);
                             break;
                         case 1:
-                            if(pcount==2) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
-                            else if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.RIGHT);
-                            else ((BasicBOT) users[u]).setDirectories(Directories.UP_RIGHT,Directories.RIGHT);
+                            if(pcount==2) ((BasicBOT) users[u]).setDirectories(Directories.DOWN_LEFT,Directories.DOWN,Directories.RIGHT);
+                            else if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.RIGHT,Directories.UP_RIGHT);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.UP_RIGHT,Directories.RIGHT,Directories.DOWN);
                             break;
                         case 2:
-                            if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
-                            else ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.DOWN);
+                            if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT,Directories.DOWN);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.DOWN,Directories.DOWN_LEFT);
                             break;
                         case 3:
-                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
-                            else ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
+                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP,Directories.UP_RIGHT);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT,Directories.RIGHT);
                             break;
                         case 4:
-                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
+                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT,Directories.UP);
                             break;
                         case 5:
-                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
+                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP,Directories.UP_RIGHT);
                             break;
                     }
                 }
