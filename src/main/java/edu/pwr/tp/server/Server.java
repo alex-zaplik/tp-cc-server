@@ -79,7 +79,6 @@ public class Server {
                                 cleanUpParties();
                                 setUpConnection(user);
                             } catch (Exception e) {
-                                e.printStackTrace();
                                 System.out.println("Disconnecting " + user.getID() + "...");
 
                                 try {
