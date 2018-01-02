@@ -9,10 +9,7 @@ import edu.pwr.tp.server.model.GameModel;
 import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
-import edu.pwr.tp.server.user.BOT;
-import edu.pwr.tp.server.user.BasicBOT;
-import edu.pwr.tp.server.user.ConnectedUser;
-import edu.pwr.tp.server.user.User;
+import edu.pwr.tp.server.user.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,7 +112,7 @@ public class Party implements Runnable {
      *
      * @param user  The user to be removed
      */
-    synchronized void removeUser(User user) {
+    private synchronized void removeUser(User user) {
         if (user == null)
             return;
 
@@ -298,7 +295,33 @@ public class Party implements Runnable {
             if (!(users[u] instanceof ConnectedUser)) {
                 if (users[u] instanceof BasicBOT) {
                     ((BasicBOT) users[u]).setIndex(u);
+                    switch (u){
+                        case 0:
+                            if(users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.UP_RIGHT);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.UP,Directories.UP_RIGHT);
+                            break;
+                        case 1:
+                            if(users.length==2) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
+                            else if(users.length==3||users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.RIGHT);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.UP_RIGHT,Directories.RIGHT);
+                            break;
+                        case 2:
+                            if(users.length==3||users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.DOWN);
+                            break;
+                        case 3:
+                            if(users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
+                            else ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
+                            break;
+                        case 4:
+                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
+                            break;
+                        case 5:
+                            ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
+                            break;
+                    }
                 }
+                continue;
             }
 
             users[u].sendMessage(Server.builder.put("s_game", "CC").put("i_pcount", pcount).put("i_pindex", u).get());

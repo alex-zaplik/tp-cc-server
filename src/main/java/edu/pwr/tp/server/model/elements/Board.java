@@ -17,7 +17,11 @@ public abstract class Board {
      * @return returns a field at given coordinates
      */
     public Field getField(int x, int y) {
-        return fields[x][y];
+        try{
+            return fields[x][y];
+        } catch (ArrayIndexOutOfBoundsException ex){
+            return null;
+        }
     }
 
     /**

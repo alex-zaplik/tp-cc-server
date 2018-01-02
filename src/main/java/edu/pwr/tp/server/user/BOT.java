@@ -18,7 +18,7 @@ public abstract class BOT extends User {
     /**
      * The manager of the game that the bot is a part of
      */
-    private GameManager manager;
+    GameManager manager;
 
     /**
      * Queue of messages that are to be sent to the server

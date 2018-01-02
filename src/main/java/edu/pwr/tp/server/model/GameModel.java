@@ -50,7 +50,7 @@ public class GameModel {
      * @param toY y coordinate to witch pawn will be moved
      * @return returns true if move is legal
      */
-    private boolean validateMove(int fromX, int fromY, int toX, int toY) {
+    public boolean validateMove(int fromX, int fromY, int toX, int toY) {
         return validator.validate(board, fromX, fromY, toX, toY);
     }
 

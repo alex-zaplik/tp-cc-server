@@ -20,6 +20,10 @@ public abstract class GameManager {
      */
     Map<Integer, Integer> userToPlayer = new HashMap<>();
 
+    public int getPlayerID(int userID){
+        return userToPlayer.get(userID);
+    }
+
     /**
      * The model managed by this manager
      */

@@ -30,7 +30,11 @@ public class CCBoard extends Board {
      */
     @Override
     public Pawn getPawnAt(int x, int y) {
-        return this.getField(x,y).getPawn();
+        try{
+            return this.getField(x,y).getPawn();
+        } catch (NullPointerException ex){
+            return null;
+        }
     }
 
     /**
@@ -73,8 +77,7 @@ public class CCBoard extends Board {
                 }
             }
 
-        if(count==10) return true;
-        else return false;
+        return count == 10;
     }
 
     /**

@@ -72,7 +72,7 @@ public class CCGameModelFactory extends GameModelFactory {
                 for (int y=9; y<=12; y++){
                     if(x+y>=12){
                         try {
-                            if(players==4) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[0].getID(), 0));
+                            if(players==4) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[0].getID(), 1));
                             else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[1].getID(),1));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
@@ -85,7 +85,7 @@ public class CCGameModelFactory extends GameModelFactory {
                 for (int y=4; y<=7; y++){
                     if(x+y<=11){
                         try {
-                            if(players!=6) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[1].getID(),1));
+                            if(players!=6) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[1].getID(),2));
                             else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[2].getID(),2));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
@@ -98,7 +98,7 @@ public class CCGameModelFactory extends GameModelFactory {
                 for(int y=0; y<=3; y++)
                     if(x+y>=12){
                         try {
-                            if(players==2) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[1].getID(),1));
+                            if(players==2) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[1].getID(),3));
                             else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[3].getID(),3));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
@@ -110,7 +110,7 @@ public class CCGameModelFactory extends GameModelFactory {
                 for(int y=4; y<=7; y++){
                     if(x+y<=20){
                         try {
-                            if(players!=6) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[2].getID(),2));
+                            if(players!=6) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[2].getID(),4));
                             else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[4].getID(),4));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
@@ -123,8 +123,8 @@ public class CCGameModelFactory extends GameModelFactory {
                 for(int y=9; y<=12; y++){
                     if(x+y>=21){
                         try {
-                            if(players==4) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[3].getID(),3));
-                            else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[5].getID(),6));
+                            if(players==4) board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[3].getID(),5));
+                            else board.putPawn(x, y, ((CCPawnFactory) pawnFactory).createPawn(ccPlayers[5].getID(),5));
                         } catch (FieldBusyException ex){
                             ex.printStackTrace();
                         }
