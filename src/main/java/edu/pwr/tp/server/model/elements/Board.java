@@ -85,4 +85,6 @@ public abstract class Board {
                     }
         return false;
     }
+
+    public abstract boolean playerWon(int color);
 }

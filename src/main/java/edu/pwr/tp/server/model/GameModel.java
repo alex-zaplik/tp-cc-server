@@ -1,10 +1,9 @@
 package edu.pwr.tp.server.model;
 
 import edu.pwr.tp.server.exceptions.FieldBusyException;
-import edu.pwr.tp.server.model.elements.Board;
-import edu.pwr.tp.server.model.elements.Pawn;
-import edu.pwr.tp.server.model.elements.Player;
-import edu.pwr.tp.server.model.elements.MoveValidator;
+import edu.pwr.tp.server.model.elements.*;
+import edu.pwr.tp.server.model.elements.chinesecheckers.CCField;
+import edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn;
 
 /**
  * this class is a Model of the Game. It consists of Board, with Pawns at starting positions, Players that represent color of the Pawns at the Board, and validator that checks if the move is legal
@@ -32,6 +31,7 @@ public class GameModel {
             board.removePawnFrom(fromX, fromY);
             try {
                 board.putPawn(toX, toY, pawn);
+                if((((CCPawn) pawn).getColorID()+3)%6==((CCField)board.getField(toX,toY)).getBaseID()) ((CCPawn) pawn).setInBase(true);
             } catch (FieldBusyException e) {
                 e.printStackTrace();
                 return false;
@@ -52,6 +52,12 @@ public class GameModel {
      */
     private boolean validateMove(int fromX, int fromY, int toX, int toY) {
         return validator.validate(board, fromX, fromY, toX, toY);
+    }
+
+    public boolean playerWon(int playerID){
+        for (int i=0; i<6; i++)
+            if(players[i].getID()==playerID) return board.playerWon(i);
+        return false;
     }
 
     /**

@@ -10,6 +10,15 @@ import edu.pwr.tp.server.model.elements.Pawn;
 public class CCPawn extends Pawn {
 
     private int colorID;
+    private boolean inBase;
+
+    public boolean isInBase() {
+        return inBase;
+    }
+
+    public void setInBase(boolean inBase) {
+        this.inBase = inBase;
+    }
 
     public int getColorID() {
         return colorID;
@@ -25,5 +34,6 @@ public class CCPawn extends Pawn {
      */
     public CCPawn(int playerID) {
         super(playerID);
+        inBase = false;
     }
 }

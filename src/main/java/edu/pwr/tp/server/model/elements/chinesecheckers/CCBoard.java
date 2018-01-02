@@ -2,6 +2,7 @@ package edu.pwr.tp.server.model.elements.chinesecheckers;
 
 import edu.pwr.tp.server.exceptions.FieldBusyException;
 import edu.pwr.tp.server.model.elements.Board;
+import edu.pwr.tp.server.model.elements.Field;
 import edu.pwr.tp.server.model.elements.Pawn;
 
 /**
@@ -59,6 +60,21 @@ public class CCBoard extends Board {
         catch (FieldBusyException ex){
             throw ex;
         }
+    }
+
+    @Override
+    public boolean playerWon(int color){
+        int count=0;
+        for(Field[] fields1: fields)
+            for (Field field: fields1){
+                if(field!=null&&((CCField) field).getBaseID()!=-1&&((CCField) field).getBaseID()==(color+3)%6){
+                    if (field.getPawn()==null||((CCPawn) field.getPawn()).getColorID()!=color) return false;
+                    else count++;
+                }
+            }
+
+        if(count==10) return true;
+        else return false;
     }
 
     /**

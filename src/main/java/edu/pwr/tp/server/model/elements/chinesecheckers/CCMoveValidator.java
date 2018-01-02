@@ -24,6 +24,7 @@ public class CCMoveValidator extends MoveValidator {
         if(b.getField(toX,toY)==null) return false;
         if(b.getPawnAt(toX, toY) != null) return false;
         if(b.getPawnAt(fromX, fromY) == null) return false;
+        if (((CCPawn)b.getPawnAt(fromX, fromY)).isInBase()&&(((CCPawn)b.getPawnAt(fromX, fromY)).getColorID()!=(((CCField) b.getField(toX,toY)).getBaseID()+3)%6)) return false;
         if(((CCBoard) b).getJumpingPawn()!=null&&b.getPawnAt(fromX,fromY)!=((CCBoard) b).getJumpingPawn()) return false;
         int diffX = (fromX-toX);
         int diffY = (fromY-toY);
@@ -32,7 +33,10 @@ public class CCMoveValidator extends MoveValidator {
             if(b.getPawnAt((fromX+toX)/2,(fromY+toY)/2)==null) return false;
             else ((CCBoard) b).setJumpingPawn((CCPawn) b.getPawnAt(fromX,fromY));
         }
-        else if (((CCBoard) b).getJumpingPawn()!=null) return false;
+        else{
+            if (((CCBoard) b).getJumpingPawn()!=null) return false;
+            if((Math.abs(diffX)==2&&Math.abs(diffY)==1)||(Math.abs(diffX)==1&&Math.abs(diffY)==2)) return false;
+        }
         if(diffX*diffY>0) return false; // this situation is where the Pawn wants to move through wrong diagonal
         return true;
     }
