@@ -1,9 +1,6 @@
 package edu.pwr.tp.server.model;
 
-import edu.pwr.tp.server.exceptions.FieldBusyException;
 import edu.pwr.tp.server.model.elements.*;
-import edu.pwr.tp.server.model.elements.chinesecheckers.CCField;
-import edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn;
 
 /**
  * this class is a Model of the Game. It consists of Board, with Pawns at starting positions, Players that represent color of the Pawns at the Board, and validator that checks if the move is legal
@@ -12,9 +9,9 @@ import edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn;
  * @see Player
  * @see MoveValidator
  */
-public class GameModel {
+public abstract class GameModel {
 
-    private Board board;
+    protected Board board;
     private Player[] players;
     private MoveValidator validator;
 
@@ -25,22 +22,7 @@ public class GameModel {
      * @param toX x coordinate to witch pawn will be moved
      * @param toY y coordinate to witch pawn will be moved
      */
-    public boolean movePawn(int playerID, int fromX, int fromY, int toX, int toY) { //TODO: right color of player validation
-        if (validateMove(fromX, fromY, toX, toY)) {
-            Pawn pawn = getPawnAt(fromX,fromY);
-            board.removePawnFrom(fromX, fromY);
-            try {
-                board.putPawn(toX, toY, pawn);
-                if((((CCPawn) pawn).getColorID()+3)%6==((CCField)board.getField(toX,toY)).getBaseID()) ((CCPawn) pawn).setInBase(true);
-            } catch (FieldBusyException e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
-        }
-
-        return false;
-    }
+    public abstract boolean movePawn(int playerID, int fromX, int fromY, int toX, int toY);
 
     /**
      * checks if move is legal

@@ -1,6 +1,7 @@
 package edu.pwr.tp.server.model.factories.chinesecheckers;
 
 import edu.pwr.tp.server.exceptions.FieldBusyException;
+import edu.pwr.tp.server.model.CCGameModel;
 import edu.pwr.tp.server.model.GameModel;
 import edu.pwr.tp.server.model.elements.Board;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCBoard;
@@ -49,7 +50,7 @@ public class CCGameModelFactory extends GameModelFactory {
      */
     @Override
     public GameModel createModel(int players) {
-        GameModel model = new GameModel();
+        CCGameModel model = new CCGameModel();
         CCBoard board = (CCBoard) boardFactory.createBoard();
         CCPlayer[] ccPlayers = new CCPlayer[players];
         for (int i=0; i<players; i++){

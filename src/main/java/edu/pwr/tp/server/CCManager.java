@@ -1,15 +1,14 @@
 package edu.pwr.tp.server;
 
 import edu.pwr.tp.server.exceptions.InvalidArgumentsException;
-import edu.pwr.tp.server.model.GameModel;
+import edu.pwr.tp.server.model.CCGameModel;
 import edu.pwr.tp.server.model.elements.Player;
-import edu.pwr.tp.server.model.factories.GameModelFactory;
 import edu.pwr.tp.server.model.factories.chinesecheckers.CCGameModelFactory;
 
 import java.util.List;
 
 /**
- * A class managing a {@link GameModel}, a link between the server and a model
+ * A class managing a {@link CCGameModel}, a link between the server and a model
  *
  * @author Aleksander Lasecki
  */
