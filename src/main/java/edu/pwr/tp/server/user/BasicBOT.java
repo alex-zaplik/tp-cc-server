@@ -1,7 +1,5 @@
 package edu.pwr.tp.server.user;
 
-import edu.pwr.tp.server.model.elements.Field;
-import edu.pwr.tp.server.model.elements.Pawn;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCField;
 import edu.pwr.tp.server.model.elements.chinesecheckers.CCPawn;
 

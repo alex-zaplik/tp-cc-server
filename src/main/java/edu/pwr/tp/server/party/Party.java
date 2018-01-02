@@ -297,20 +297,20 @@ public class Party implements Runnable {
                     ((BasicBOT) users[u]).setIndex(u);
                     switch (u){
                         case 0:
-                            if(users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.UP_RIGHT);
+                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.UP_RIGHT);
                             else ((BasicBOT) users[u]).setDirectories(Directories.UP,Directories.UP_RIGHT);
                             break;
                         case 1:
-                            if(users.length==2) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
-                            else if(users.length==3||users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.RIGHT);
+                            if(pcount==2) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
+                            else if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.RIGHT);
                             else ((BasicBOT) users[u]).setDirectories(Directories.UP_RIGHT,Directories.RIGHT);
                             break;
                         case 2:
-                            if(users.length==3||users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
+                            if(pcount==3||pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.DOWN_LEFT);
                             else ((BasicBOT) users[u]).setDirectories(Directories.RIGHT,Directories.DOWN);
                             break;
                         case 3:
-                            if(users.length==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
+                            if(pcount==4) ((BasicBOT) users[u]).setDirectories(Directories.LEFT,Directories.UP);
                             else ((BasicBOT) users[u]).setDirectories(Directories.DOWN,Directories.DOWN_LEFT);
                             break;
                         case 4:
