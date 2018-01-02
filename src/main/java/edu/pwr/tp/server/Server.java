@@ -10,11 +10,13 @@ import edu.pwr.tp.server.message.parser.JSONMessageParser;
 import edu.pwr.tp.server.model.GameType;
 import edu.pwr.tp.server.party.Party;
 import edu.pwr.tp.server.user.ConnectedUser;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +79,7 @@ public class Server {
                                 cleanUpParties();
                                 setUpConnection(user);
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 System.out.println("Disconnecting " + user.getID() + "...");
 
                                 try {
@@ -110,9 +113,13 @@ public class Server {
      * Deleting parties in the party list that are present in partiesToDelete and clearing partiesToDelete
      */
     private synchronized void cleanUpParties() {
-        for (Party p : parties) {
+        Iterator<Party> iter = parties.iterator();
+
+        while (iter.hasNext()) {
+            Party p = iter.next();
+
             if (partiesToDelete.contains(p)) {
-                parties.remove(p);
+                iter.remove();
                 partiesToDelete.remove(p);
             }
         }

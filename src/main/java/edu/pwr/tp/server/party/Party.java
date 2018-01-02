@@ -167,10 +167,10 @@ public class Party implements Runnable {
         joinable = false;
 
         List<Integer> userIDs = initUserIDs();
+        defragUsers(users);
         initGameModel(userIDs);
 
         if (running) {
-            defragUsers(users);
             sendPartyStartInfo(userIDs.size());
             waitForUsers();
         }
