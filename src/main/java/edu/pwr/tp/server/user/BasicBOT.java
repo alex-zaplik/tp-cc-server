@@ -37,9 +37,9 @@ public class BasicBOT extends BOT {
 			for (int y=0; y<17; y++){
 				CCPawn pawn = (CCPawn) manager.getModel().getPawnAt(x,y);
 				CCField target1 = (CCField) manager.getModel().getBoard().getField(x+directory1.x,y+directory1.y);
-				if(target1.getPawn()!=null) target1 = (CCField) manager.getModel().getBoard().getField(x+2*directory1.x,y+2*directory1.y);
+				if(target1!=null&&target1.getPawn()!=null) target1 = (CCField) manager.getModel().getBoard().getField(x+2*directory1.x,y+2*directory1.y);
 				CCField target2 = (CCField) manager.getModel().getBoard().getField(x+directory2.x,y+directory2.y);
-                if(target2.getPawn()!=null) target2 = (CCField) manager.getModel().getBoard().getField(x+2*directory2.x,y+2*directory2.y);
+                if(target2!=null&&target2.getPawn()!=null) target2 = (CCField) manager.getModel().getBoard().getField(x+2*directory2.x,y+2*directory2.y);
 				if(pawn!=null&&pawn.getPlayerID()==manager.getPlayerID(getID())){
 					if(target1!=null&&(target1.getBaseID()==-1||target1.getBaseID()==(pawn.getColorID()+3)%6||target1.getBaseID()==pawn.getColorID())){
 						if(manager.getModel().validateMove(x,y,target1.getX(),target1.getY())){
